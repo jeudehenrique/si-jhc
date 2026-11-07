@@ -551,3 +551,5 @@ body{font-family:Inter,system-ui,sans-serif;font-size:14.5px;-webkit-font-smooth
 .adot{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);font-style:normal;font-size:12px;font-weight:600}
 .agentlink.active .adot{background:var(--accent);color:#06121c}
 .logo{box-shadow:none}
+/* os ícones de linha dentro do escritório não herdam o "svg 100%" do desenho */
+.office-wrap svg.ic{display:inline-block;width:1.1em;height:1.1em;vertical-align:-.18em}
