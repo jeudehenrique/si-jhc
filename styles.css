@@ -560,3 +560,5 @@ body{font-family:Inter,system-ui,sans-serif;font-size:14.5px;-webkit-font-smooth
 .ofhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
 .ofhead b{display:block;font-size:15px}.ofhead small{color:var(--muted)}
 .ofact{display:flex;gap:8px}
+
+.rcard.nolink{cursor:default}.rcard.nolink:hover{transform:none;box-shadow:none}

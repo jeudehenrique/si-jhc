@@ -337,9 +337,7 @@ const Office = (() => {
     data.st.forEach(stationFloor);
     data.st.forEach(station);
     lounge(); bushes();
-    hit(quadPts(.2, .2, 0, 10.8, 9.8), 'data-ofc="gerente"', `Agente 1, gerente geral: ${data.me.label}`);
-    data.vagas.forEach((v, n) => hit(quadPts(.8, 11.5 + n * 7.85, 0, 10, 7.85), `data-owner="${v.owner}"`, `Vaga ${v.short}`));
-    data.st.forEach(s => { const [x0, y0] = stationOrigin(s.i); hit(quadPts(x0 + .2, y0 + .2, 0, 7.6, 7.6), s.hasAgent ? `data-ofc="${s.agentKey}"` : `data-room="${s.room}"`, s.hasAgent ? `${s.agentName}: ${s.label}` : `${s.room}: sem agente ainda`); });
+    // o desenho é só para visualizar: sem áreas clicáveis (quem leva a algum lugar é o sino de pendências)
     add('</svg>');
 
     const at = ([x, y]) => `left:${(x / VW * 100).toFixed(2)}%;top:${(y / VH * 100).toFixed(2)}%`;

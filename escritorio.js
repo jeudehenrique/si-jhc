@@ -117,22 +117,25 @@ function officePanelHTML(ags) {
   if (a.key === 'gerente') {
     const urg = computeAlerts().filter(x => x.sev !== 'soon');
     n = urg.length;
-    rows = urg.slice(0, 8).map(x => `<div class="alert ${x.sev}" style="cursor:default"><span class="aico">${x.icon}</span><div class="abody"><b>${esc(x.text)}</b><small>${esc(x.sub)}</small></div><span class="asev ${x.sev}">${SEV[x.sev]}</span></div>`).join('');
+    rows = urg.slice(0, 8).map(x => `<div class="alert ${x.sev}"><span class="aico">${x.icon}</span><div class="abody"><b>${esc(x.text)}</b><small>${esc(x.sub)}</small></div><span class="asev ${x.sev}">${SEV[x.sev]}</span></div>`).join('');
   } else {
     const d = state.demands.filter(x => isOpen(x) && a.rooms.includes(x.room)).sort(byDue);
     const p = state.posts.filter(x => a.postTypes.includes(x.type) && ['todo', 'doing', 'approval'].includes(x.status)).sort((x, y) => x.publishDate.localeCompare(y.publishDate));
     const ads = a.key === 'dashboard' ? state.ads.filter(x => x.fundsLevel === 'urgente' || x.fundsLevel === 'baixo') : [];
     n = d.length + p.length + ads.length;
-    rows = d.map(itemHTML).join('')
-      + p.map(x => `<div class="alert ${postLate(x) ? 'late' : 'soon'}" style="cursor:default"><span class="aico">${POST_TYPES[x.type].icon}</span><div class="abody"><b>${esc(x.title)}</b><small>${esc(cname(x.clientId))} · ${POST_TYPES[x.type].label} · publica ${fmtDate(x.publishDate)}</small></div><span class="asev ${postLate(x) ? 'late' : 'soon'}">${postLate(x) ? 'Atrasado' : 'Pauta'}</span></div>`).join('')
-      + ads.map(x => `<div class="alert ${x.fundsLevel === 'urgente' ? 'late' : 'today'}" style="cursor:default"><span class="aico">📣</span><div class="abody"><b>${esc(x.company)}: saldo ${x.fundsLevel === 'urgente' ? 'urgente' : 'baixo'}</b><small>abastecer a conta de anúncios</small></div><span class="asev ${x.fundsLevel === 'urgente' ? 'late' : 'today'}">${x.fundsLevel === 'urgente' ? 'Urgente' : 'Baixo'}</span></div>`).join('');
+    const sevOf = x => x.due < todayStr() ? 'late' : x.due === todayStr() ? 'today' : 'soon';
+    rows = d.map(x => `<div class="alert ${sevOf(x)}" style="cursor:pointer"><span class="aico">📋</span><div class="abody"><b>${esc(x.desc)}</b><small>${esc(cname(x.clientId))} · ${esc(x.room)} · prazo ${fmtDate(x.due)}</small></div><span class="asev ${sevOf(x)}">${SEV[sevOf(x)]}</span></div>`).join('')
+      + p.map(x => `<div class="alert ${postLate(x) ? 'late' : 'soon'}"><span class="aico">${POST_TYPES[x.type].icon}</span><div class="abody"><b>${esc(x.title)}</b><small>${esc(cname(x.clientId))} · ${POST_TYPES[x.type].label} · publica ${fmtDate(x.publishDate)}</small></div><span class="asev ${postLate(x) ? 'late' : 'soon'}">${postLate(x) ? 'Atrasado' : 'Pauta'}</span></div>`).join('')
+      + ads.map(x => `<div class="alert ${x.fundsLevel === 'urgente' ? 'late' : 'today'}"><span class="aico">📣</span><div class="abody"><b>${esc(x.company)}: saldo ${x.fundsLevel === 'urgente' ? 'urgente' : 'baixo'}</b><small>abastecer a conta de anúncios</small></div><span class="asev ${x.fundsLevel === 'urgente' ? 'late' : 'today'}">${x.fundsLevel === 'urgente' ? 'Urgente' : 'Baixo'}</span></div>`).join('');
   }
-  const go = a.key === 'gerente' ? 'data-view="alertas"' : `data-view="sala:${a.key}"`;
+  const dest = a.key === 'gerente' ? 'alertas' : `sala:${a.key}`;
   return `<div class="card ofpanel">
-    <div class="ofhead"><div><b>Pendências · Agente ${a.num} · ${esc(a.title)}</b><small>${n ? `${n} item${n > 1 ? 's' : ''} em aberto` : 'nenhuma pendência'}</small></div>
-      <div class="ofact"><button class="btn primary small" ${go}>${a.key === 'gerente' ? 'Abrir o Foco do dia' : 'Ir para a sala do agente'}</button><button class="btn ghost small" data-ofc="${a.key}" aria-label="Fechar">Fechar</button></div></div>
-    <div class="list">${rows || '<div class="empty">Tudo em dia por aqui.</div>'}</div></div>`;
+    <div class="ofhead"><div><b>Pendências · Agente ${a.num} · ${esc(a.title)}</b><small>${n ? `${n} item${n > 1 ? 's' : ''} em aberto · clique numa pendência para ir até ${a.key === 'gerente' ? 'o Foco do dia' : 'o agente que resolve'}` : 'nenhuma pendência'}</small></div>
+      <div class="ofact"><button class="btn ghost small" data-ofc="${a.key}" aria-label="Fechar">Fechar</button></div></div>
+    <div class="list">${rows.replace(/<div class="alert /g, `<div data-view="${dest}" tabindex="0" role="button" class="alert `) || '<div class="empty">Tudo em dia por aqui.</div>'}</div></div>`;
 }
+// o escritório é só para visualizar: tira dos cartões qualquer link que jogue para outra tela
+const semLink = h => h.replace(/ data-(view|room|owner)="[^"]*"/g, '').replace(/ tabindex="0" role="button"/g, '').replace(/ · clique para abrir a sala/g, '').replace('Clique para ver os alertas', 'Cérebro da SI').replace(/class="rcard /g, 'class="rcard nolink ');
 function renderEscritorio() {
   const ags = AGENTS.map(agentInfo);
   const cnt = k => ags.filter(a => a.k === k).length;
@@ -156,11 +159,11 @@ function renderEscritorio() {
     <span class="rstate free"><i></i>LIVRE = tomando café</span>
     <span class="rchip warn">🔔 3 = tem pendência</span><span class="rchip late">🔔 vermelho = tem atrasada</span>
   </div>
-  <p class="note">Clique num personagem ou no sino para ver as pendências dele (clique de novo para fechar). Cadeira vazia = sala ainda sem agente. <span class="sm-only">No celular, arraste o escritório para o lado.</span></p>
+  <p class="note">Aqui você só visualiza. Clique no sino de um agente para ver as pendências dele (clique de novo para fechar) e escolha uma pendência para ir até quem resolve. Cadeira vazia = sala ainda sem agente. <span class="sm-only">No celular, arraste o escritório para o lado.</span></p>
   <div class="section-title">Detalhes <b>dos agentes</b></div>
-  <div class="rgrid agents">${ags.map(agentCardHTML).join('')}</div>
+  <div class="rgrid agents">${semLink(ags.map(agentCardHTML).join(''))}</div>
   <details class="roomsfold"><summary>Salas ainda sem agente (${semAgente.length}) e vagas futuras</summary>
-    <div class="rgrid smalls">${semAgente.map(emptyRoomHTML).join('')}${VAGAS.map(([, name]) => `<div class="rcard small vaga"><div class="rhead"><b>👤 ${esc(name.replace('VAGA · ', ''))}</b><small>Vaga futura</small></div><div class="vagabox">a contratar</div></div>`).join('')}</div>
+    <div class="rgrid smalls">${semLink(semAgente.map(emptyRoomHTML).join(''))}${VAGAS.map(([, name]) => `<div class="rcard small vaga"><div class="rhead"><b>👤 ${esc(name.replace('VAGA · ', ''))}</b><small>Vaga futura</small></div><div class="vagabox">a contratar</div></div>`).join('')}</div>
   </details>`;
 }
 
