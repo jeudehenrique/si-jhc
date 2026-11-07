@@ -22,7 +22,7 @@ function computeAlerts() {
   // demandas
   state.demands.filter(d => isOpen(d) && d.due <= soon).forEach(d => {
     const sev = d.due < today ? 'late' : d.due === today ? 'today' : 'soon';
-    add(sev, '✅', `${d.desc}`, `${cname(d.clientId)} · ${d.room} · prazo ${fmtDate(d.due)} (${day(d.due)})${d.status === 'approval' ? ' · aguardando sua aprovação' : ''}`, { demand: d.id });
+    add(sev, '📋', `${d.desc}`, `${cname(d.clientId)} · ${d.room} · prazo ${fmtDate(d.due)} (${day(d.due)})${d.status === 'approval' ? ' · aguardando sua aprovação' : ''}`, { demand: d.id });
   });
   // pautas
   state.posts.filter(p => !postReady(p) && p.deliveryDate <= soon).forEach(p => {
@@ -142,7 +142,7 @@ function renderAlertas() {
   const first = alertList[0];
   return `<div class="page-head"><h1 class="title">FOCO <b>DO DIA</b></h1></div>
     ${growthHTML()}
-    ${alertList.length ? `<p class="muted">${first ? `<b style="color:var(--text)">Comece por aqui:</b> ${esc(first.text)} (${alertOwner(first)}). ` : ''}${alertList.length} ${alertList.length > 1 ? 'itens pedem' : 'item pede'} ação, do mais importante para o menos. Toque num item para resolver.</p>`
+    ${alertList.length ? `<p class="callout">${first ? `<b style="color:var(--text)">Comece por aqui:</b> ${esc(first.text)} (${alertOwner(first)}). ` : ''}${alertList.length} ${alertList.length > 1 ? 'itens pedem' : 'item pede'} ação, do mais importante para o menos. Toque num item para resolver.</p>`
       : '<div class="card empty">Nada pedindo ação agora. 🎉<br>Tudo em dia.</div>'}
     ${groups.map(([s, l]) => `<div class="section-title ${s}">${titles[s]} <b>(${l.length})</b></div>
       <div class="list">${l.map(([a, i]) => alertItemHTML(a, i)).join('')}</div>`).join('')}
