@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SI · Superinteligência JHC</title>
+<meta name="theme-color" content="#0A0E13">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SI JHC">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- LOGIN -->
+<section id="login" class="login hidden">
+  <div class="login-card card">
+    <div class="logo big"><img src="icons/icon-512.png" alt="JH Company"></div>
+    <h1 class="title"><span class="si">SI</span> SUPERINTELIGÊNCIA <b>JHC</b></h1>
+    <p class="muted">Entre para acessar o painel da JH Company.</p>
+    <form id="loginForm">
+      <label>E-mail<input type="email" id="loginEmail" required placeholder="voce@email.com"></label>
+      <label>Senha<input type="password" id="loginPass" required placeholder="••••••••"></label>
+      <button class="btn primary" type="submit">Entrar</button>
+    </form>
+    <p class="login-error" id="loginError" role="alert"></p>
+    <p class="note" id="loginNote"></p>
+  </div>
+</section>
+
+<!-- APP -->
+<div id="app" class="app hidden">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo"><img src="icons/icon-192.png" alt="JH Company"></div>
+      <div class="brand-name title"><span class="si">SI</span><span class="hide-sm"> SUPERINTELIGÊNCIA</span> <b>JHC</b></div>
+    </div>
+    <div class="top-actions">
+      <button class="btn ghost bell" id="bellBtn" data-view="alertas" aria-label="Alertas">🔔<span id="bellCount" class="badge hidden"></span></button>
+      <span id="modeBadge" class="mode"></span>
+      <button class="btn ghost" id="themeBtn" title="Trocar tema">◐ <span class="hide-sm">Tema</span></button>
+      <button class="btn ghost" id="logoutBtn">Sair</button>
+    </div>
+  </header>
+
+  <nav class="nav" id="nav">
+    <button data-view="alertas"><i>🎯</i><span>Foco do dia</span></button>
+    <button data-view="painel" class="active"><i>▦</i><span>Painel</span></button>
+    <button data-view="demandas"><i>☰</i><span>Demandas</span></button>
+    <button data-view="clientes"><i>◉</i><span>Clientes</span></button>
+    <button data-view="calendario"><i>▤</i><span>Calendário</span></button>
+    <button data-view="metas"><i>◎</i><span>Metas</span></button>
+    <button data-view="escritorio"><i>⌂</i><span>Escritório</span></button>
+    <button data-view="financeiro"><i>$</i><span>Financeiro</span></button>
+    <div class="navsep">Agentes</div>
+    <button class="agentlink" data-view="alertas"><i>🧠</i><span>1 · Gerente geral</span></button>
+    <button class="agentlink" data-view="sala:conteudo"><i>🖼️</i><span>2 · Design gráfico</span></button>
+    <button class="agentlink" data-view="sala:video"><i>🎬</i><span>3 · Editor de vídeo</span></button>
+    <button class="agentlink" data-view="sala:dashboard"><i>📊</i><span>4 · Gestor dashboard</span></button>
+    <button class="agentlink" data-view="sala:crm"><i>💬</i><span>5 · CRM e WhatsApp</span></button>
+  </nav>
+
+  <main id="main" class="main"></main>
+</div>
+
+<!-- MODAIS -->
+<dialog id="demandDialog">
+  <form method="dialog" id="demandForm">
+    <h2 class="title" id="demandTitle">NOVA <b>DEMANDA</b></h2>
+    <label>Descrição<textarea id="fDesc" required rows="3" placeholder="O que foi pedido?"></textarea></label>
+    <div class="grid2">
+      <label>Cliente<select id="fClient"></select></label>
+      <label>Sala / setor<select id="fRoom"></select></label>
+      <label>Prioridade<select id="fPriority"><option value="alta">Alta</option><option value="media" selected>Média</option><option value="baixa">Baixa</option></select></label>
+      <label>Prazo<input type="date" id="fDue" required></label>
+      <label>Status<select id="fStatus"></select></label>
+      <label>Responsável<select id="fOwner"></select></label>
+    </div>
+    <label class="check"><input type="checkbox" id="fDelegable"> Pode ser delegada</label>
+    <div class="dialog-actions">
+      <button type="button" class="btn danger hidden" id="fDelete">Excluir</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" id="fCancel">Cancelar</button>
+      <button type="submit" class="btn primary">Salvar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="clientDialog">
+  <form method="dialog" id="clientForm2">
+    <h2 class="title" id="clientTitle">NOVO <b>CLIENTE</b></h2>
+    <label>Nome da empresa<input id="kName" required maxlength="120"></label>
+    <div class="grid2">
+      <label>WhatsApp / telefone<input id="kPhone" type="tel" maxlength="30" placeholder="(46) 99999-9999"></label>
+      <label>Início do contrato<input id="kStart" type="date"></label>
+    </div>
+    <div class="flabel"><span>Serviços contratados</span><div id="kServices" class="chips"></div></div>
+    <div id="kPostsBox" class="subbox">
+      <div class="flabel"><span>Dias de postagem</span><div id="kPostDays" class="chips"></div></div>
+      <div class="flabel"><span>Redes</span><div id="kNetworks" class="chips"></div></div>
+      <label>Tipo padrão do post<select id="kPostType"></select></label>
+    </div>
+    <div id="kVideosBox" class="subbox"><label>Reels por mês<input id="kVideos" type="number" min="1" max="31" step="1"></label></div>
+    <div id="kSiteBox" class="subbox"><label>Site<select id="kSiteKind"><option value="manutencao">Manutenção mensal</option><option value="novo">Criar site novo</option></select></label></div>
+    <div class="grid2">
+      <label>Valor mensal (R$)<input id="kFee" type="number" min="0" step="0.01" placeholder="1500"></label>
+      <label>Pagamento<select id="kSplit"><option value="1">1 parcela no mês</option><option value="2">2 parcelas no mês</option></select></label>
+      <label>Dia do pagamento<input id="kDay1" type="number" min="1" max="31"></label>
+      <label id="kDay2Wrap">Dia da 2ª parcela<input id="kDay2" type="number" min="1" max="31"></label>
+    </div>
+    <p class="muted small-note" id="kPayHint"></p>
+    <label>Observações<textarea id="kNotes" rows="2" maxlength="500"></textarea></label>
+    <div class="dialog-actions">
+      <button type="button" class="btn danger hidden" id="kDelete">Remover</button>
+      <button type="button" class="btn ghost hidden" id="kPlan">📋 Montar o mês</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" id="kCancel">Cancelar</button>
+      <button type="submit" class="btn primary">Salvar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="planDialog">
+  <form method="dialog" id="planForm">
+    <h2 class="title" id="planTitle">MONTAR O <b>MÊS</b></h2>
+    <label>Mês<input type="month" id="planMonth" required></label>
+    <p class="muted small-note">Prévia do que será criado. Desmarque o que não quiser. Datas que já passaram ficam de fora.</p>
+    <div id="planList" class="plist"></div>
+    <div class="dialog-actions">
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" id="planCancel">Cancelar</button>
+      <button type="submit" class="btn primary" id="planCreate">Criar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="postDialog">
+  <form method="dialog" id="postForm">
+    <h2 class="title" id="postTitle">NOVA <b>PAUTA</b></h2>
+    <label>Pauta / tema<input id="pTitleInput" required maxlength="200" placeholder="Ex.: 5 mitos sobre clareamento"></label>
+    <div class="grid2">
+      <label>Cliente<select id="pClient"></select></label>
+      <label>Tipo<select id="pType"></select></label>
+      <label>Rede<select id="pNetwork"></select></label>
+      <label>Status<select id="pStatus"></select></label>
+      <label>Data de publicação<input type="date" id="pPublish" required></label>
+      <label>Data de entrega<input type="date" id="pDelivery" required></label>
+    </div>
+    <label>Link do material<input id="pLink" type="url" placeholder="https://…"></label>
+    <div id="pRoom" class="room-box"></div>
+    <div class="dialog-actions">
+      <button type="button" class="btn danger hidden" id="pDelete">Excluir</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" id="pCancel">Cancelar</button>
+      <button type="submit" class="btn primary">Salvar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="bulkDialog">
+  <form method="dialog" id="bulkForm">
+    <h2 class="title">CRIAR <b>MÊS DE PAUTAS</b></h2>
+    <div class="grid2">
+      <label>Cliente<select id="bClient"></select></label>
+      <label>Mês<input type="month" id="bMonth" required></label>
+      <label>Tipo padrão<select id="bType"></select></label>
+      <label>Rede<select id="bNetwork"></select></label>
+    </div>
+    <div class="flabel"><span>Dias de publicação</span><div id="bDays" class="chips"></div></div>
+    <label>Entrega quantos dias antes?<input type="number" id="bLead" min="0" max="30" value="2"></label>
+    <label>Temas (um por linha, opcional)<textarea id="bLines" rows="4" placeholder="Um tema por linha. Para mudar o tipo, comece com carrossel:, reels: ou post:"></textarea></label>
+    <div id="bPreview"></div>
+    <div class="dialog-actions">
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" id="bCancel">Cancelar</button>
+      <button type="submit" class="btn primary" id="bCreate">Criar pautas</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="goalDialog">
+  <form method="dialog" id="goalForm">
+    <h2 class="title" id="goalTitle">NOVA <b>META</b></h2>
+    <label>Nome da meta<input id="gName" required maxlength="80" placeholder="Ex.: Prospecções feitas"></label>
+    <div class="grid2">
+      <label>Como é medida<select id="gSource"></select></label>
+      <label>Período<select id="gPeriod"></select></label>
+    </div>
+    <label>Número da meta<input type="number" id="gTarget" min="0" step="1" required></label>
+    <div class="dialog-actions">
+      <button type="button" class="btn danger hidden" id="gDelete">Excluir</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" id="gCancel">Cancelar</button>
+      <button type="submit" class="btn primary">Salvar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="logDialog">
+  <form method="dialog" id="logForm">
+    <h2 class="title" id="logTitle">REGISTRAR</h2>
+    <div class="grid2">
+      <label>Quantidade<input type="number" id="lAmount" min="1" step="1" required></label>
+      <label>Dia<input type="date" id="lDate" required></label>
+    </div>
+    <div class="dialog-actions">
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" id="lCancel">Cancelar</button>
+      <button type="submit" class="btn primary">Registrar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="confirmDialog" class="confirm">
+  <p id="confirmText"></p>
+  <div class="dialog-actions">
+    <span class="spacer"></span>
+    <button type="button" class="btn ghost" id="confirmCancel">Cancelar</button>
+    <button type="button" class="btn danger" id="confirmOk">Excluir</button>
+  </div>
+</dialog>
+
+<dialog id="costDialog">
+  <form method="dialog" id="costForm">
+    <h2 class="title" id="costTitle">NOVO <b>CUSTO</b></h2>
+    <label>Nome<input id="fcName" required maxlength="100" placeholder="Ex.: Canva Pro"></label>
+    <div class="grid2">
+      <label>Categoria<select id="fcCat"></select></label>
+      <label>Tipo<select id="fcKind"><option value="fixed">Fixo (todo mês)</option><option value="variable">Variável (só neste mês)</option></select></label>
+      <label>Valor (R$)<input id="fcAmount" type="number" min="0" step="0.01" required></label>
+      <label id="fcDateWrap">Data do pagamento<input id="fcDate" type="date"></label>
+      <label id="fcDayWrap">Dia do pagamento (todo mês)<input id="fcDay" type="number" min="1" max="31" step="1"></label>
+    </div>
+    <label class="check" id="fcActiveWrap"><input type="checkbox" id="fcActive" checked> Ativo (conta nos meses)</label>
+    <div class="dialog-actions">
+      <button type="button" class="btn danger hidden" id="fcDelete">Excluir</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" id="fcCancel">Cancelar</button>
+      <button type="submit" class="btn primary">Salvar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="incomeDialog">
+  <form method="dialog" id="incomeForm">
+    <h2 class="title" id="incomeTitle">RECEITA <b>AVULSA</b></h2>
+    <label>Descrição<input id="fiDesc" required maxlength="120" placeholder="Ex.: Criação de site"></label>
+    <div class="grid2">
+      <label>Cliente (opcional)<select id="fiClient"></select></label>
+      <label>Valor (R$)<input id="fiAmount" type="number" min="0" step="0.01" required></label>
+      <label>Data<input id="fiDate" type="date" required></label>
+    </div>
+    <label class="check"><input type="checkbox" id="fiPaid"> Já recebido</label>
+    <div class="dialog-actions">
+      <button type="button" class="btn danger hidden" id="fiDelete">Excluir</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" id="fiCancel">Cancelar</button>
+      <button type="submit" class="btn primary">Salvar</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast" class="toast hidden"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="data.js"></script>
+<script src="calendar.js"></script>
+<script src="metas.js"></script>
+<script src="clientes.js"></script>
+<script src="agentes.js"></script>
+<script src="office.js"></script>
+<script src="escritorio.js"></script>
+<script src="salas.js"></script>
+<script src="financeiro.js"></script>
+<script src="alertas.js"></script>
+<script src="anuncios.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
