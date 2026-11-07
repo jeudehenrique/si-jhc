@@ -92,6 +92,33 @@ function linksHTML(crmAt) {
   return `<div class="flinks">${items.map(([n, d]) => `<span class="flink ${h(d) <= 24 ? 'ok' : ''}" title="${d ? 'última novidade ' + timeAgo(d) : 'ainda sem novidades'}"><i></i>${n}</span>`).join('')}</div>`;
 }
 
+/* Bloco "Prospecção": números enviados pelo CRM (Agente 5) para a tabela metricas_crm, atualizados a cada minuto como o resto do painel. */
+function prospeccaoHTML() {
+  const row = state.crm.find(x => x.id === 'prospeccao');
+  if (!row) return `<div class="card pros"><div class="pros-head"><b>Prospecção</b><span class="muted">CRM</span></div><p class="muted" style="margin:6px 0 0">Sem dados do CRM ainda.</p></div>`;
+  const d = row.dados || {}, num = v => Number.isFinite(Number(v)) ? Number(v) : 0, has = v => v !== null && v !== undefined && Number.isFinite(Number(v));
+  const at = d.atualizado_em || row.updatedAt, min = at ? (Date.now() - new Date(at)) / 60000 : Infinity;
+  const off = !(min <= 30), hh = at ? new Date(at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '--:--';
+  const bar = (lbl, v, m) => `<div class="prow"><span>${lbl}</span><div class="progress"><span style="width:${m > 0 ? Math.min(100, Math.round(v / m * 100)) : 0}%"></span></div><b>${fmtNum(v)}<small> / ${fmtNum(m)}</small></b></div>`;
+  const pct1 = v => num(v).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const falta = has(d.faltam_fechamentos) ? num(d.faltam_fechamentos) : null;
+  const para = falta === null ? '' : falta <= 0 ? 'Meta de fechamentos do mês batida.'
+    : `Para bater a meta: faltam ${fmtNum(falta)} fechamento${falta > 1 ? 's' : ''}; ${has(d.contatos_necessarios) ? `na taxa atual, ${fmtNum(num(d.contatos_necessarios))} contatos` : 'ainda sem dados para calcular'}.`;
+  return `<div class="card pros ${off ? 'off' : ''}">
+    <div class="pros-head"><b>Prospecção</b><span class="muted">CRM</span></div>
+    ${off ? `<div class="pros-off">CRM offline — últimos números de ${hh}</div>` : ''}
+    ${bar('Hoje', num(d.hoje), num(d.meta_diaria))}${bar('Semana', num(d.semana), num(d.meta_semanal))}${bar('Mês', num(d.mes), num(d.meta_mensal))}
+    <div class="pros-stats">
+      <div><small>Fechamentos no mês</small><b>${fmtNum(num(d.fechamentos_mes))}${has(d.meta_fechamentos) ? `<small> / ${fmtNum(num(d.meta_fechamentos))}</small>` : ''}</b></div>
+      <div><small>Taxa de fechamento</small><b>${pct1(d.taxa_fechamento)}%</b></div>
+      <div><small>Em andamento</small><b>${fmtNum(num(d.em_andamento))}</b></div>
+      <div><small>Desqualificadas</small><b>${fmtNum(num(d.desqualificadas))}</b></div>
+    </div>
+    ${para ? `<p class="pros-para">${para}</p>` : ''}
+    ${off ? '' : `<small class="muted">Atualizado ${timeAgo(at)}</small>`}
+  </div>`;
+}
+
 /* Crescimento: metas de prospecção, fechamentos e caixa do mês, no topo do Foco do dia. */
 function growthHTML() {
   const day = state.goals.find(g => g.period === 'day' && /prospec/i.test(g.name));
@@ -103,13 +130,7 @@ function growthHTML() {
   const cells = [];
   const crm = state.crm.find(x => x.id === 'prospeccao')?.dados;
   const crmAt = state.crm.find(x => x.id === 'prospeccao')?.updatedAt;
-  if (crm && Number.isFinite(Number(crm.meta_diaria))) {   // números vindos do CRM (Agente 5), sem registro manual
-    const hoje = Number(crm.hoje) || 0, md = Number(crm.meta_diaria) || 0, mes = Number(crm.mes) || 0, mm = Number(crm.meta_mensal) || 0;
-    const diffCrm = mes - md * Number(todayStr().slice(8));
-    cells.push(cell('🎯 Prospecção hoje (CRM)', fmtNum(hoje), fmtNum(md), hoje >= md ? 'meta do dia batida! 🎉' : `faltam ${fmtNum(md - hoje)} contatos`));
-    cells.push(cell('📅 Prospecção no mês (CRM)', fmtNum(mes), fmtNum(mm), diffCrm >= 0 ? `no ritmo (+${fmtNum(diffCrm)} à frente)` : `${fmtNum(-diffCrm)} atrás do ritmo`));
-    if (Number.isFinite(Number(crm.meta_fechamentos))) cells.push(cell('🤝 Fechamentos no mês (CRM)', fmtNum(Number(crm.fechamentos_mes) || 0), fmtNum(Number(crm.meta_fechamentos)),
-      `${fmtNum(Number(crm.em_andamento) || 0)} em negociação · taxa de fechamento ${fmtNum(Number(crm.taxa_fechamento) || 0)}%`));
+  if (crm && Number.isFinite(Number(crm.meta_diaria))) {   // números do CRM aparecem no bloco "Prospecção"; sem registro manual
   } else if (day) {
     const s = goalState(day), mTarget = day.target * 30, mv = goalValue(day, rangeFor('month'));
     const diff = mv - day.target * Number(todayStr().slice(8));
@@ -126,7 +147,7 @@ function growthHTML() {
       <div class="gsub">${atr > 0 ? `<b style="color:var(--alert)">${money(atr)} em atraso</b> · cobrar` : 'nenhum pagamento em atraso'}</div></div>`);
   }
   if (!cells.length) return `<div class="card"><b>🚀 Crescimento</b><p class="muted">Crie as metas de prospecção para acompanhar aqui (10 contatos por dia = 300 por mês).</p><button class="btn primary" data-meta="seed">Criar metas sugeridas</button></div>`;
-  return `<div class="section-title">Crescimento <b>do negócio</b></div><div class="fgrid">${cells.join('')}</div>${linksHTML(crmAt)}`;
+  return `<div class="section-title">Crescimento <b>do negócio</b></div>${prospeccaoHTML()}<div class="fgrid">${cells.join('')}</div>${linksHTML(crmAt)}`;
 }
 
 function alertItemHTML(a, i) {

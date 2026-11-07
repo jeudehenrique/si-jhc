@@ -575,3 +575,15 @@ body{font-family:Inter,system-ui,sans-serif;font-size:14.5px;-webkit-font-smooth
 .ofbody{min-width:0}.ofbody b{display:block;font-size:13px;font-weight:600;line-height:1.3}.ofbody small{display:block;color:var(--muted);font-size:11.5px;margin-top:1px}
 .ofgo{flex:none;color:var(--accent);font-size:12px;font-weight:600;white-space:nowrap}
 .ofpop-list .empty{padding:14px;text-align:center;color:var(--muted)}
+
+/* bloco Prospecção (CRM) no Agente 1 */
+.pros{margin-bottom:16px}
+.pros-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.pros-head b{font-size:15px}
+.prow{display:grid;grid-template-columns:64px 1fr 96px;gap:12px;align-items:center;margin:8px 0;font-size:13px}
+.prow>span{color:var(--muted)}.prow b{text-align:right;font-weight:600}.prow b small{color:var(--muted);font-weight:400}
+.pros-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:14px 0 6px;padding-top:12px;border-top:1px solid var(--border)}
+.pros-stats small{display:block;color:var(--muted);font-size:11.5px}.pros-stats b{font-size:20px;font-weight:700}.pros-stats b small{display:inline;font-size:13px;font-weight:400}
+.pros-para{margin:8px 0;padding:9px 12px;border-radius:10px;background:color-mix(in srgb,var(--accent) 9%,var(--surface));color:var(--muted);font-size:13px}
+.pros-off{margin:2px 0 8px;padding:8px 12px;border-radius:10px;background:color-mix(in srgb,var(--gold) 14%,transparent);border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);color:var(--gold);font-size:13px;font-weight:600}
+.pros.off .prow,.pros.off .pros-stats{opacity:.55}
