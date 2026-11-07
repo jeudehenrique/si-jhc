@@ -202,6 +202,15 @@
   </form>
 </dialog>
 
+<dialog id="pwDialog">
+  <form method="dialog" id="pwForm">
+    <h2 class="title">NOVA <b>SENHA</b></h2>
+    <label>Escolha a sua nova senha (mínimo 8 caracteres)<input type="password" id="pwNew" minlength="8" autocomplete="new-password" required></label>
+    <label>Repita a senha<input type="password" id="pwNew2" minlength="8" autocomplete="new-password" required></label>
+    <p class="muted" id="pwMsg"></p>
+    <div class="dialog-actions"><span class="spacer"></span><button type="submit" class="btn primary">Salvar nova senha</button></div>
+  </form>
+</dialog>
 <dialog id="logDialog">
   <form method="dialog" id="logForm">
     <h2 class="title" id="logTitle">REGISTRAR</h2>

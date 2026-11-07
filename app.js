@@ -331,6 +331,7 @@ async function showApp() {
     $('#main').innerHTML = `<div class="card empty">Não consegui carregar seus dados do servidor.<br>Verifique a internet e se o arquivo <b>schema.sql</b> foi rodado no Supabase.<br><button class="btn" onclick="location.reload()">Tentar de novo</button></div>`;
     return;
   }
+  if (typeof SI_RECOVERY !== 'undefined' && SI_RECOVERY && DB.online) $('#pwDialog').showModal();   // veio do e-mail de recuperar senha
   $('#modeBadge').textContent = DB.online ? '☁ Online' : 'Modo teste';
   $('#modeBadge').className = 'mode ' + (DB.online ? 'on' : 'test');
   render();
@@ -372,3 +373,13 @@ window.addEventListener('focus', refreshData);
 
 applyTheme();
 showApp();
+
+/* nova senha (link de recuperação do e-mail) */
+$('#pwDialog').addEventListener('cancel', e => e.preventDefault());   // só fecha depois de salvar
+$('#pwForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const a = $('#pwNew').value, b = $('#pwNew2').value, msg = $('#pwMsg');
+  if (a !== b) { msg.textContent = 'As duas senhas não são iguais.'; return; }
+  try { await DB.setPassword(a); $('#pwDialog').close(); toast('Senha nova salva. ✓'); }
+  catch (err) { msg.textContent = err.message; }
+});

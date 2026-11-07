@@ -1,6 +1,8 @@
 /* Camada de dados e login.
    Modo online (Supabase): liga sozinho quando config.js tem a URL e a chave pública do projeto.
    Modo teste: sem configuração, os dados ficam só neste navegador. */
+// link de "recuperar senha" do e-mail: guarda antes de o Supabase limpar o endereço
+const SI_RECOVERY = /type=recovery/.test(location.hash);
 const DB = (() => {
   const cfg = window.JH_CONFIG || {};
   const configured = !!(cfg.supabaseUrl && cfg.supabaseAnonKey);
@@ -120,6 +122,11 @@ const DB = (() => {
       if (!online) { localStorage.setItem(SESSION, email); return; }
       const { error } = await sb.auth.signInWithPassword({ email, password });
       if (error) throw new Error(loginMessage(error));
+    },
+    async setPassword(password) {
+      if (!online) return;
+      const { error } = await sb.auth.updateUser({ password });
+      if (error) throw new Error(/same|different/i.test(error.message) ? 'Escolha uma senha diferente da anterior.' : /weak|short|least/i.test(error.message) ? 'Senha muito curta ou fraca. Use pelo menos 8 caracteres.' : 'Não consegui salvar a senha: ' + error.message);
     },
     async logout() {
       snap = null;
