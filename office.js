@@ -345,7 +345,7 @@ const Office = (() => {
     const at = ([x, y]) => `left:${(x / VW * 100).toFixed(2)}%;top:${(y / VH * 100).toFixed(2)}%`;
     const notif = (p, a, dx = 7.5) => a.pend ? `<div class="notif ${a.late ? 'late' : ''}" style="${at(p)};margin-left:${dx}cqw">🔔 ${a.pend}</div>` : '';
     // uma etiqueta clara em cima de cada personagem: nome, função e se está trabalhando ou livre
-    const tag = (p, num, title, k, label) => `<div class="ntag ${k}" style="${at(p)}"><b>Agente ${num}</b><span>${title}</span><em><i></i>${label}</em></div>`;
+    const tag = (p, num, title, k, label) => `<div class="ntag ${k}" style="${at(p)}"><b>Agente ${num}</b><em><i></i>${label}</em></div>`;
     let ov = tag(P(5.6, 6.2, 5.4), 1, 'Gerente geral', data.me.k, data.me.label) + notif(P(5.6, 6.2, 5.4), data.me, 8.5);
     data.st.forEach(s => {
       const [x0, y0] = stationOrigin(s.i), p = P(x0 + 4, y0 + 5.2, 5.4);
