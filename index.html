@@ -13,7 +13,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -22,7 +22,7 @@
 <section id="login" class="login hidden">
   <div class="login-card card">
     <div class="logo big"><img src="icons/icon-512.png" alt="JH Company"></div>
-    <h1 class="title"><span class="si">SI</span> SUPERINTELIGÊNCIA <b>JHC</b></h1>
+    <h1 class="title brand-login">SUPERINTELIGÊNCIA <b>JHC</b></h1>
     <p class="muted">Entre para acessar o painel da JH Company.</p>
     <form id="loginForm">
       <label>E-mail<input type="email" id="loginEmail" required placeholder="voce@email.com"></label>
@@ -39,7 +39,7 @@
   <header class="topbar">
     <div class="brand">
       <div class="logo"><img src="icons/icon-192.png" alt="JH Company"></div>
-      <div class="brand-name title"><span class="si">SI</span><span class="hide-sm"> SUPERINTELIGÊNCIA</span> <b>JHC</b></div>
+      <div class="brand-name title"><span class="hide-sm">SUPERINTELIGÊNCIA </span><b>JHC</b></div>
     </div>
     <div class="top-actions">
       <button class="btn ghost bell" id="bellBtn" data-view="alertas" aria-label="Alertas">🔔<span id="bellCount" class="badge hidden"></span></button>
@@ -50,20 +50,20 @@
   </header>
 
   <nav class="nav" id="nav">
-    <button data-view="alertas"><i>🎯</i><span>Foco do dia</span></button>
-    <button data-view="painel" class="active"><i>▦</i><span>Painel</span></button>
-    <button data-view="demandas"><i>☰</i><span>Demandas</span></button>
-    <button data-view="clientes"><i>◉</i><span>Clientes</span></button>
-    <button data-view="calendario"><i>▤</i><span>Calendário</span></button>
-    <button data-view="metas"><i>◎</i><span>Metas</span></button>
-    <button data-view="escritorio"><i>⌂</i><span>Escritório</span></button>
-    <button data-view="financeiro"><i>$</i><span>Financeiro</span></button>
+    <button data-view="alertas"><i data-ic="target"></i><span>Foco do dia</span></button>
+    <button data-view="painel" class="active"><i data-ic="grid"></i><span>Painel</span></button>
+    <button data-view="demandas"><i data-ic="list"></i><span>Demandas</span></button>
+    <button data-view="clientes"><i data-ic="users"></i><span>Clientes</span></button>
+    <button data-view="calendario"><i data-ic="calendar"></i><span>Calendário</span></button>
+    <button data-view="metas"><i data-ic="target"></i><span>Metas</span></button>
+    <button data-view="escritorio"><i data-ic="home"></i><span>Escritório</span></button>
+    <button data-view="financeiro"><i data-ic="coin"></i><span>Financeiro</span></button>
     <div class="navsep">Agentes</div>
-    <button class="agentlink" data-view="alertas"><i>🧠</i><span>1 · Gerente geral</span></button>
-    <button class="agentlink" data-view="sala:conteudo"><i>🖼️</i><span>2 · Design gráfico</span></button>
-    <button class="agentlink" data-view="sala:video"><i>🎬</i><span>3 · Editor de vídeo</span></button>
-    <button class="agentlink" data-view="sala:dashboard"><i>📊</i><span>4 · Gestor dashboard</span></button>
-    <button class="agentlink" data-view="sala:crm"><i>💬</i><span>5 · CRM e WhatsApp</span></button>
+    <button class="agentlink" data-view="alertas"><i class="adot">1</i><span>Gerente geral</span></button>
+    <button class="agentlink" data-view="sala:conteudo"><i class="adot">2</i><span>Design gráfico</span></button>
+    <button class="agentlink" data-view="sala:video"><i class="adot">3</i><span>Editor de vídeo</span></button>
+    <button class="agentlink" data-view="sala:dashboard"><i class="adot">4</i><span>Gestor dashboard</span></button>
+    <button class="agentlink" data-view="sala:crm"><i class="adot">5</i><span>CRM e WhatsApp</span></button>
   </nav>
 
   <main id="main" class="main"></main>
@@ -278,6 +278,7 @@
 <div id="toast" class="toast hidden"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
+<script src="icones.js"></script>
 <script src="data.js"></script>
 <script src="calendar.js"></script>
 <script src="metas.js"></script>
