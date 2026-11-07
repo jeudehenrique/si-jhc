@@ -553,3 +553,10 @@ body{font-family:Inter,system-ui,sans-serif;font-size:14.5px;-webkit-font-smooth
 .logo{box-shadow:none}
 /* os ícones de linha dentro do escritório não herdam o "svg 100%" do desenho */
 .office-wrap svg.ic{display:inline-block;width:1.1em;height:1.1em;vertical-align:-.18em}
+
+/* pendências abertas embaixo do escritório */
+.notif[data-ofc]{pointer-events:auto;cursor:pointer}
+.ofpanel{margin:16px 0 8px;border-color:color-mix(in srgb,var(--accent) 45%,var(--border))}
+.ofhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.ofhead b{display:block;font-size:15px}.ofhead small{color:var(--muted)}
+.ofact{display:flex;gap:8px}

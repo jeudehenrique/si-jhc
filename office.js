@@ -337,13 +337,13 @@ const Office = (() => {
     data.st.forEach(stationFloor);
     data.st.forEach(station);
     lounge(); bushes();
-    hit(quadPts(.2, .2, 0, 10.8, 9.8), 'data-view="alertas"', `Agente 1, gerente geral: ${data.me.label}`);
+    hit(quadPts(.2, .2, 0, 10.8, 9.8), 'data-ofc="gerente"', `Agente 1, gerente geral: ${data.me.label}`);
     data.vagas.forEach((v, n) => hit(quadPts(.8, 11.5 + n * 7.85, 0, 10, 7.85), `data-owner="${v.owner}"`, `Vaga ${v.short}`));
-    data.st.forEach(s => { const [x0, y0] = stationOrigin(s.i); hit(quadPts(x0 + .2, y0 + .2, 0, 7.6, 7.6), s.hasAgent ? `data-view="sala:${s.agentKey}"` : `data-room="${s.room}"`, s.hasAgent ? `${s.agentName}: ${s.label}` : `${s.room}: sem agente ainda`); });
+    data.st.forEach(s => { const [x0, y0] = stationOrigin(s.i); hit(quadPts(x0 + .2, y0 + .2, 0, 7.6, 7.6), s.hasAgent ? `data-ofc="${s.agentKey}"` : `data-room="${s.room}"`, s.hasAgent ? `${s.agentName}: ${s.label}` : `${s.room}: sem agente ainda`); });
     add('</svg>');
 
     const at = ([x, y]) => `left:${(x / VW * 100).toFixed(2)}%;top:${(y / VH * 100).toFixed(2)}%`;
-    const notif = (p, a, dx = 7.5) => a.pend ? `<div class="notif ${a.late ? 'late' : ''}" style="${at(p)};margin-left:${dx}cqw">🔔 ${a.pend}</div>` : '';
+    const notif = (p, a, dx = 7.5) => a.pend ? `<div class="notif ${a.late ? 'late' : ''}" data-ofc="${a.agentKey || 'gerente'}" style="${at(p)};margin-left:${dx}cqw">🔔 ${a.pend}</div>` : '';
     // uma etiqueta clara em cima de cada personagem: nome, função e se está trabalhando ou livre
     const tag = (p, num, title, k, label) => `<div class="ntag ${k}" style="${at(p)}"><b>Agente ${num}</b><em><i></i>${label}</em></div>`;
     let ov = tag(P(5.6, 6.2, 5.4), 1, 'Gerente geral', data.me.k, data.me.label) + notif(P(5.6, 6.2, 5.4), data.me, 8.5);

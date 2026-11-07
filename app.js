@@ -274,6 +274,8 @@ document.addEventListener('click', e => {
   if (act === 'clients') { view = 'clientes'; return render(); }
   if (act === 'sample') return loadSample();
   if (e.target.closest('[data-clear-agent]')) { filters.agent = ''; return render(); }
+  const ofc = e.target.closest('[data-ofc]');   // personagem ou sino no escritório: abre/fecha as pendências, sem sair da tela
+  if (ofc) { officeOpen = officeOpen === ofc.dataset.ofc ? null : ofc.dataset.ofc; render(); document.querySelector('.ofpanel')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
   const nav = e.target.closest('[data-view]');
   if (nav) { e.preventDefault(); view = nav.dataset.view; render(); return; }
   const rm = e.target.closest('[data-room]');
