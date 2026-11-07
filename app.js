@@ -9,7 +9,9 @@ const CLIENT_LIMIT = 15;
 /* Os dados (salvamento e login) ficam em data.js: modo teste ou Supabase. */
 const emptyState = () => ({ clients: [], demands: [], posts: [], goals: [], goalLogs: [], agents: [], costs: [], receipts: [], settings: [], ads: [] });
 let state = emptyState();
-let view = 'alertas';
+/* a aba aberta fica no endereço (#escritorio, #calendario…): ao dar F5 a página volta para a mesma aba */
+const VIEWS_OK = /^(painel|alertas|demandas|clientes|calendario|metas|escritorio|financeiro|sala:[a-z]+)$/;
+let view = (() => { try { const h = decodeURIComponent(location.hash.slice(1)); return VIEWS_OK.test(h) ? h : 'alertas'; } catch { return 'alertas'; } })();
 let filters = { status: '', room: '', client: '', owner: '', q: '' };
 let editingId = null;
 
@@ -183,6 +185,7 @@ function statusOf(o) {
   return { k, late, doing, appr, total: o.length };
 }
 function render() {
+  try { if (location.hash.slice(1) !== view) history.replaceState(null, '', '#' + view); } catch {}
   $('#main').innerHTML = view === 'painel' ? renderPainel() : view === 'escritorio' ? renderEscritorio() : view === 'calendario' ? renderCalendario() : view === 'metas' ? renderMetas() : view === 'clientes' ? renderClientes() : view === 'financeiro' ? renderFinanceiro() : view === 'alertas' ? renderAlertas() : view.startsWith('sala:') ? renderSala(view.slice(5)) : renderDemandas();
   document.querySelectorAll('#nav button[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === view));
   $('#bellBtn').classList.toggle('active', view === 'alertas');
