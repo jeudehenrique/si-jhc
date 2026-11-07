@@ -109,30 +109,42 @@ function sceneHTML(ags) {
 }
 
 let officeOpen = null;   // agente cujas pendências estão abertas embaixo do escritório (clicou abre, clicou de novo fecha)
-function officePanelHTML(ags) {
-  const a = ags.find(x => x.key === officeOpen);
+/* Lista de pendências ao lado do sino do agente (dentro do escritório, sem descer a tela).
+   Clicar no sino abre; clicar de novo fecha. Cada pendência tem "Ir resolver", que leva ao agente responsável. */
+function officePopHTML() {
+  const a = AGENTS.map(agentInfo).find(x => x.key === officeOpen);
   if (!a) return '';
   const cname = id => state.clients.find(c => c.id === id)?.name || 'Sem cliente';
-  let rows = '', n = 0;
-  if (a.key === 'gerente') {
-    const urg = computeAlerts().filter(x => x.sev !== 'soon');
-    n = urg.length;
-    rows = urg.slice(0, 8).map(x => `<div class="alert ${x.sev}"><span class="aico">${x.icon}</span><div class="abody"><b>${esc(x.text)}</b><small>${esc(x.sub)}</small></div><span class="asev ${x.sev}">${SEV[x.sev]}</span></div>`).join('');
-  } else {
-    const d = state.demands.filter(x => isOpen(x) && a.rooms.includes(x.room)).sort(byDue);
-    const p = state.posts.filter(x => a.postTypes.includes(x.type) && ['todo', 'doing', 'approval'].includes(x.status)).sort((x, y) => x.publishDate.localeCompare(y.publishDate));
-    const ads = a.key === 'dashboard' ? state.ads.filter(x => x.fundsLevel === 'urgente' || x.fundsLevel === 'baixo') : [];
-    n = d.length + p.length + ads.length;
-    const sevOf = x => x.due < todayStr() ? 'late' : x.due === todayStr() ? 'today' : 'soon';
-    rows = d.map(x => `<div class="alert ${sevOf(x)}" style="cursor:pointer"><span class="aico">📋</span><div class="abody"><b>${esc(x.desc)}</b><small>${esc(cname(x.clientId))} · ${esc(x.room)} · prazo ${fmtDate(x.due)}</small></div><span class="asev ${sevOf(x)}">${SEV[sevOf(x)]}</span></div>`).join('')
-      + p.map(x => `<div class="alert ${postLate(x) ? 'late' : 'soon'}"><span class="aico">${POST_TYPES[x.type].icon}</span><div class="abody"><b>${esc(x.title)}</b><small>${esc(cname(x.clientId))} · ${POST_TYPES[x.type].label} · publica ${fmtDate(x.publishDate)}</small></div><span class="asev ${postLate(x) ? 'late' : 'soon'}">${postLate(x) ? 'Atrasado' : 'Pauta'}</span></div>`).join('')
-      + ads.map(x => `<div class="alert ${x.fundsLevel === 'urgente' ? 'late' : 'today'}"><span class="aico">📣</span><div class="abody"><b>${esc(x.company)}: saldo ${x.fundsLevel === 'urgente' ? 'urgente' : 'baixo'}</b><small>abastecer a conta de anúncios</small></div><span class="asev ${x.fundsLevel === 'urgente' ? 'late' : 'today'}">${x.fundsLevel === 'urgente' ? 'Urgente' : 'Baixo'}</span></div>`).join('');
-  }
+  const sevOf = d => d < todayStr() ? 'late' : d === todayStr() ? 'today' : 'soon';
   const dest = a.key === 'gerente' ? 'alertas' : `sala:${a.key}`;
-  return `<div class="card ofpanel">
-    <div class="ofhead"><div><b>Pendências · Agente ${a.num} · ${esc(a.title)}</b><small>${n ? `${n} item${n > 1 ? 's' : ''} em aberto · clique numa pendência para ir até ${a.key === 'gerente' ? 'o Foco do dia' : 'o agente que resolve'}` : 'nenhuma pendência'}</small></div>
-      <div class="ofact"><button class="btn ghost small" data-ofc="${a.key}" aria-label="Fechar">Fechar</button></div></div>
-    <div class="list">${rows.replace(/<div class="alert /g, `<div data-view="${dest}" tabindex="0" role="button" class="alert `) || '<div class="empty">Tudo em dia por aqui.</div>'}</div></div>`;
+  let list = [];
+  if (a.key === 'gerente') {
+    list = computeAlerts().filter(x => x.sev !== 'soon').map(x => ({ sev: x.sev, t: x.text, s: x.sub }));
+  } else {
+    const d = state.demands.filter(x => isOpen(x) && a.rooms.includes(x.room)).sort(byDue).map(x => ({ sev: sevOf(x.due), t: x.desc, s: `${cname(x.clientId)} · ${x.room} · prazo ${fmtDate(x.due)}` }));
+    const p = state.posts.filter(x => a.postTypes.includes(x.type) && ['todo', 'doing', 'approval'].includes(x.status)).sort((x, y) => x.publishDate.localeCompare(y.publishDate))
+      .map(x => ({ sev: postLate(x) ? 'late' : 'soon', t: x.title, s: `${cname(x.clientId)} · ${POST_TYPES[x.type].label} · publica ${fmtDate(x.publishDate)}` }));
+    const ads = a.key === 'dashboard' ? state.ads.filter(x => x.fundsLevel === 'urgente' || x.fundsLevel === 'baixo').map(x => ({ sev: x.fundsLevel === 'urgente' ? 'late' : 'today', t: `${x.company}: saldo ${x.fundsLevel === 'urgente' ? 'urgente' : 'baixo'}`, s: 'abastecer a conta de anúncios' })) : [];
+    list = [...d, ...p, ...ads];
+  }
+  const rows = list.map(x => `<div class="ofrow ${x.sev}" data-view="${dest}" tabindex="0" role="button"><div class="ofbody"><b>${esc(x.t)}</b><small>${esc(x.s)}</small></div><span class="ofgo">Ir resolver ›</span></div>`).join('');
+  return `<div class="ofpop" role="dialog" aria-label="Pendências do agente ${a.num}">
+    <div class="ofpop-head"><div><b>Agente ${a.num} · ${esc(a.title)}</b><small>${list.length ? `${list.length} pendência${list.length > 1 ? 's' : ''}` : 'nenhuma pendência'}</small></div>
+      <button class="ofx" data-ofc="${a.key}" aria-label="Fechar">×</button></div>
+    <div class="ofpop-list">${rows || '<div class="empty">Tudo em dia por aqui.</div>'}</div></div>`;
+}
+// coloca a lista ao lado do sino aberto (à direita; se faltar espaço, à esquerda) e dentro do desenho
+function placeOfficePop() {
+  const wrap = document.querySelector('.office-wrap');
+  if (!wrap || !officeOpen) return;
+  const bell = wrap.querySelector(`.notif[data-ofc="${officeOpen}"]`);
+  wrap.insertAdjacentHTML('beforeend', officePopHTML());
+  const pop = wrap.querySelector('.ofpop'); if (!pop) return;
+  const w = wrap.getBoundingClientRect(), b = bell ? bell.getBoundingClientRect() : { left: w.left + w.width / 2, right: w.left + w.width / 2, top: w.top + 40, height: 0 };
+  const pw = pop.offsetWidth, ph = pop.offsetHeight;
+  let left = b.right - w.left + 10; if (left + pw > w.width - 8) left = b.left - w.left - pw - 10;
+  let top = b.top - w.top - 8; top = Math.max(8, Math.min(top, w.height - ph - 8));
+  pop.style.left = Math.max(8, left) + 'px'; pop.style.top = top + 'px';
 }
 // o escritório é só para visualizar: tira dos cartões qualquer link que jogue para outra tela
 const semLink = h => h.replace(/ data-(view|room|owner)="[^"]*"/g, '').replace(/ tabindex="0" role="button"/g, '').replace(/ · clique para abrir a sala/g, '').replace('Clique para ver os alertas', 'Cérebro da SI').replace(/class="rcard /g, 'class="rcard nolink ');
@@ -153,13 +165,12 @@ function renderEscritorio() {
   </div>
   ${summary}
   ${sceneHTML(ags)}
-  ${officePanelHTML(ags)}
   <div class="legend big">
     <span class="rstate work"><i></i>TRABALHANDO = digitando, tela acesa</span>
     <span class="rstate free"><i></i>LIVRE = tomando café</span>
     <span class="rchip warn">🔔 3 = tem pendência</span><span class="rchip late">🔔 vermelho = tem atrasada</span>
   </div>
-  <p class="note">Aqui você só visualiza. Clique no sino de um agente para ver as pendências dele (clique de novo para fechar) e escolha uma pendência para ir até quem resolve. Cadeira vazia = sala ainda sem agente. <span class="sm-only">No celular, arraste o escritório para o lado.</span></p>
+  <p class="note">Aqui você só visualiza. Clique no sino de um agente para ver as pendências dele ao lado (clique de novo para fechar) e use "Ir resolver" para ir até quem resolve. Cadeira vazia = sala ainda sem agente. <span class="sm-only">No celular, arraste o escritório para o lado.</span></p>
   <div class="section-title">Detalhes <b>dos agentes</b></div>
   <div class="rgrid agents">${semLink(ags.map(agentCardHTML).join(''))}</div>
   <details class="roomsfold"><summary>Salas ainda sem agente (${semAgente.length}) e vagas futuras</summary>

@@ -187,6 +187,7 @@ function statusOf(o) {
 function render() {
   try { if (location.hash.slice(1) !== view) history.replaceState(null, '', '#' + view); } catch {}
   $('#main').innerHTML = view === 'painel' ? renderPainel() : view === 'escritorio' ? renderEscritorio() : view === 'calendario' ? renderCalendario() : view === 'metas' ? renderMetas() : view === 'clientes' ? renderClientes() : view === 'financeiro' ? renderFinanceiro() : view === 'alertas' ? renderAlertas() : view.startsWith('sala:') ? renderSala(view.slice(5)) : renderDemandas();
+  if (view === 'escritorio' && typeof placeOfficePop === 'function') placeOfficePop();
   document.querySelectorAll('#nav button[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === view));
   $('#bellBtn').classList.toggle('active', view === 'alertas');
   updateBell();
@@ -275,7 +276,7 @@ document.addEventListener('click', e => {
   if (act === 'sample') return loadSample();
   if (e.target.closest('[data-clear-agent]')) { filters.agent = ''; return render(); }
   const ofc = e.target.closest('[data-ofc]');   // personagem ou sino no escritório: abre/fecha as pendências, sem sair da tela
-  if (ofc) { officeOpen = officeOpen === ofc.dataset.ofc ? null : ofc.dataset.ofc; render(); document.querySelector('.ofpanel')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
+  if (ofc) { officeOpen = officeOpen === ofc.dataset.ofc ? null : ofc.dataset.ofc; render(); return; }
   const nav = e.target.closest('[data-view]');
   if (nav) { e.preventDefault(); view = nav.dataset.view; render(); return; }
   const rm = e.target.closest('[data-room]');
