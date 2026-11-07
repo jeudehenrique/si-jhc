@@ -587,3 +587,24 @@ body{font-family:Inter,system-ui,sans-serif;font-size:14.5px;-webkit-font-smooth
 .pros-para{margin:8px 0;padding:9px 12px;border-radius:10px;background:color-mix(in srgb,var(--accent) 9%,var(--surface));color:var(--muted);font-size:13px}
 .pros-off{margin:2px 0 8px;padding:8px 12px;border-radius:10px;background:color-mix(in srgb,var(--gold) 14%,transparent);border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);color:var(--gold);font-size:13px;font-weight:600}
 .pros.off .prow,.pros.off .pros-stats{opacity:.55}
+
+/* resumo do CRM, no desenho do dashboard dele */
+.crm-label{font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:2px 0 10px}
+.crm-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:16px}
+.crm-tile{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:14px 18px}
+.crm-tile small{display:block;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.crm-tile b{display:block;font-size:26px;font-weight:700;margin-top:4px;line-height:1.1}
+.crm-tile span{display:block;color:var(--muted);font-size:12.5px;margin-top:6px}
+.crm-tiles-big .crm-tile{padding:18px 20px}.crm-tiles-big .crm-tile small{text-transform:none;letter-spacing:0;font-size:13px;font-weight:500}
+.crm-metas{margin-bottom:16px}
+.crm-goals{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.crm-goal-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px}
+.crm-goal-top>span{font-weight:600}.crm-goal-top b{font-weight:700}.crm-goal-top b small{color:var(--muted);font-weight:400}
+.crm-goal-top b em{font-style:normal;color:var(--muted);font-size:12px;font-weight:400;margin-left:8px}
+.crm-goal>small{display:block;color:var(--muted);font-size:12px;margin-top:8px}
+.crm-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:18px;padding-top:16px;border-top:1px solid var(--border)}
+.crm-stats small{display:block;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.crm-stats b{display:block;font-size:26px;font-weight:700;margin-top:4px}.crm-stats b small{display:inline;font-size:15px;font-weight:400;letter-spacing:0;text-transform:none}
+.crm-stats span{display:block;color:var(--muted);font-size:12px;margin-top:4px}.crm-stats p{margin:6px 0 0;color:var(--muted);font-size:13.5px}
+.crm-dash.off .crm-tiles,.crm-dash.off .crm-metas{opacity:.55}
+@media (max-width:760px){.crm-goals,.crm-stats{grid-template-columns:1fr;gap:18px}}

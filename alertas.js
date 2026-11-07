@@ -92,30 +92,40 @@ function linksHTML(crmAt) {
   return `<div class="flinks">${items.map(([n, d]) => `<span class="flink ${h(d) <= 24 ? 'ok' : ''}" title="${d ? 'última novidade ' + timeAgo(d) : 'ainda sem novidades'}"><i></i>${n}</span>`).join('')}</div>`;
 }
 
-/* Bloco "Prospecção": números enviados pelo CRM (Agente 5) para a tabela metricas_crm, atualizados a cada minuto como o resto do painel. */
+/* Resumo do CRM (Agente 5) no mesmo desenho do dashboard dele: Empresas, Metas de prospecção e totais.
+   Os números vêm da tabela metricas_crm (chave prospeccao), atualizada a cada minuto como o resto do painel.
+   Campos opcionais que o CRM pode acrescentar depois (aparecem sozinhos quando existirem):
+   total_empresas, em_negociacao, clientes_fechados, followups_hoje, followups_atrasados. */
 function prospeccaoHTML() {
   const row = state.crm.find(x => x.id === 'prospeccao');
-  if (!row) return `<div class="card pros"><div class="pros-head"><b>Prospecção</b><span class="muted">CRM</span></div><p class="muted" style="margin:6px 0 0">Sem dados do CRM ainda.</p></div>`;
+  const head = right => `<div class="section-title" style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span>Resumo <b>do CRM</b></span>${right || ''}</div>`;
+  if (!row) return `${head()}<div class="card"><p class="muted" style="margin:0">Sem dados do CRM ainda.</p></div>`;
   const d = row.dados || {}, num = v => Number.isFinite(Number(v)) ? Number(v) : 0, has = v => v !== null && v !== undefined && Number.isFinite(Number(v));
   const at = d.atualizado_em || row.updatedAt, min = at ? (Date.now() - new Date(at)) / 60000 : Infinity;
   const off = !(min <= 30), hh = at ? new Date(at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '--:--';
-  const bar = (lbl, v, m) => `<div class="prow"><span>${lbl}</span><div class="progress"><span style="width:${m > 0 ? Math.min(100, Math.round(v / m * 100)) : 0}%"></span></div><b>${fmtNum(v)}<small> / ${fmtNum(m)}</small></b></div>`;
   const pct1 = v => num(v).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const tile = (lbl, v, sub) => `<div class="crm-tile"><small>${lbl}</small><b>${fmtNum(v)}</b>${sub ? `<span>${sub}</span>` : ''}</div>`;
+  const goal = (lbl, v, m, cap) => { const p = m > 0 ? Math.round(v / m * 100) : 0; return `<div class="crm-goal"><div class="crm-goal-top"><span>${lbl}</span><b>${fmtNum(v)}<small> / ${fmtNum(m)}</small><em>${p}%</em></b></div>
+    <div class="progress"><span style="width:${Math.min(100, p)}%"></span></div><small>${cap}: ${fmtNum(m)} contatos</small></div>`; };
   const falta = has(d.faltam_fechamentos) ? num(d.faltam_fechamentos) : null;
-  const para = falta === null ? '' : falta <= 0 ? 'Meta de fechamentos do mês batida.'
-    : `Para bater a meta: faltam ${fmtNum(falta)} fechamento${falta > 1 ? 's' : ''}; ${has(d.contatos_necessarios) ? `na taxa atual, ${fmtNum(num(d.contatos_necessarios))} contatos` : 'ainda sem dados para calcular'}.`;
-  return `<div class="card pros ${off ? 'off' : ''}">
-    <div class="pros-head"><b>Prospecção</b><span class="muted">CRM</span></div>
+  const para = falta === null ? 'Ainda sem dados para calcular.' : falta <= 0 ? 'Meta de fechamentos do mês batida.'
+    : `Faltam ${fmtNum(falta)} fechamento${falta > 1 ? 's' : ''}; ${has(d.contatos_necessarios) ? `na taxa atual, ${fmtNum(num(d.contatos_necessarios))} contatos` : 'ainda sem dados para calcular'}.`;
+  const t1 = [has(d.total_empresas) && tile('Total', num(d.total_empresas)), tile('Cadastradas hoje', num(d.hoje)), tile('Em andamento', num(d.em_andamento)), tile('Fechadas', num(d.fechamentos_mes)), tile('Desqualificadas', num(d.desqualificadas))].filter(Boolean).join('');
+  const t3 = [has(d.total_empresas) && tile('Empresas', num(d.total_empresas), 'cadastradas no CRM'), has(d.em_negociacao) && tile('Em negociação', num(d.em_negociacao), 'oportunidades abertas'),
+    has(d.clientes_fechados) && tile('Clientes fechados', num(d.clientes_fechados), `${pct1(d.taxa_fechamento)}% de conversão`),
+    has(d.followups_hoje) && tile('Follow-ups hoje', num(d.followups_hoje), has(d.followups_atrasados) && num(d.followups_atrasados) > 0 ? `${num(d.followups_atrasados)} atrasado${num(d.followups_atrasados) > 1 ? 's' : ''}` : 'nenhum atrasado')].filter(Boolean).join('');
+  return `${head(off ? '' : `<small class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">Atualizado ${timeAgo(at)}</small>`)}
+  <div class="crm-dash ${off ? 'off' : ''}">
     ${off ? `<div class="pros-off">CRM offline — últimos números de ${hh}</div>` : ''}
-    ${bar('Hoje', num(d.hoje), num(d.meta_diaria))}${bar('Semana', num(d.semana), num(d.meta_semanal))}${bar('Mês', num(d.mes), num(d.meta_mensal))}
-    <div class="pros-stats">
-      <div><small>Fechamentos no mês</small><b>${fmtNum(num(d.fechamentos_mes))}${has(d.meta_fechamentos) ? `<small> / ${fmtNum(num(d.meta_fechamentos))}</small>` : ''}</b></div>
-      <div><small>Taxa de fechamento</small><b>${pct1(d.taxa_fechamento)}%</b></div>
-      <div><small>Em andamento</small><b>${fmtNum(num(d.em_andamento))}</b></div>
-      <div><small>Desqualificadas</small><b>${fmtNum(num(d.desqualificadas))}</b></div>
-    </div>
-    ${para ? `<p class="pros-para">${para}</p>` : ''}
-    ${off ? '' : `<small class="muted">Atualizado ${timeAgo(at)}</small>`}
+    <div class="crm-label">Empresas</div><div class="crm-tiles">${t1}</div>
+    <div class="card crm-metas"><div class="crm-label">Metas de prospecção</div>
+      <div class="crm-goals">${goal('Hoje', num(d.hoje), num(d.meta_diaria), 'Meta diária')}${goal('Esta semana', num(d.semana), num(d.meta_semanal), 'Meta semanal')}${goal('Este mês', num(d.mes), num(d.meta_mensal), 'Meta mensal')}</div>
+      <div class="crm-stats">
+        <div><small>Fechamentos no mês</small><b>${fmtNum(num(d.fechamentos_mes))}${has(d.meta_fechamentos) ? `<small> / ${fmtNum(num(d.meta_fechamentos))}</small>` : ''}</b></div>
+        <div><small>Taxa de fechamento</small><b>${pct1(d.taxa_fechamento)}%</b><span>fechamentos ÷ contatos do mês</span></div>
+        <div><small>Para bater a meta</small><p>${para}</p></div>
+      </div></div>
+    ${t3 ? `<div class="crm-tiles crm-tiles-big">${t3}</div>` : ''}
   </div>`;
 }
 
