@@ -7,7 +7,7 @@ const OWNERS = ['Eu','Gestão (a contratar)','Criação com IA (a contratar)'];
 const CLIENT_LIMIT = 15;
 
 /* Os dados (salvamento e login) ficam em data.js: modo teste ou Supabase. */
-const emptyState = () => ({ clients: [], demands: [], posts: [], goals: [], goalLogs: [], agents: [], costs: [], receipts: [], settings: [], ads: [] });
+const emptyState = () => ({ clients: [], demands: [], posts: [], goals: [], goalLogs: [], agents: [], costs: [], receipts: [], settings: [], ads: [], crm: [] });
 let state = emptyState();
 /* a aba aberta fica no endereço (#escritorio, #calendario…): ao dar F5 a página volta para a mesma aba */
 const VIEWS_OK = /^(painel|alertas|demandas|clientes|calendario|metas|escritorio|financeiro|sala:[a-z]+)$/;

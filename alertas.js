@@ -83,6 +83,15 @@ function alertOwner(a) {
   return '🧠 Você';
 }
 
+/* Conexões: mostra se cada parte do negócio está mandando notícias para o SI (verde = novidade nas últimas 24 h). */
+function linksHTML(crmAt) {
+  const h = d => d ? (Date.now() - new Date(d).getTime()) / 36e5 : Infinity;
+  const ads = state.ads.map(a => a.syncedAt).filter(Boolean).sort().pop();
+  const ag = key => state.agents.find(a => a.key === key)?.updatedAt;
+  const items = [['📊 Painel Meta Ads', ads], ['💬 CRM', crmAt], ['🖼️ Design', ag('conteudo')], ['🎬 Vídeo', ag('video')]];
+  return `<div class="flinks">${items.map(([n, d]) => `<span class="flink ${h(d) <= 24 ? 'ok' : ''}" title="${d ? 'última novidade ' + timeAgo(d) : 'ainda sem novidades'}"><i></i>${n}</span>`).join('')}</div>`;
+}
+
 /* Crescimento: metas de prospecção, fechamentos e caixa do mês, no topo do Foco do dia. */
 function growthHTML() {
   const day = state.goals.find(g => g.period === 'day' && /prospec/i.test(g.name));
@@ -92,14 +101,23 @@ function growthHTML() {
   const cell = (title, v, t, sub, extra = '') => `<div class="card fcell"><small>${title}</small>
     <div class="gnum"><b>${v}</b><span> / ${t}</span></div>${bar(goalPct(parseFloat(String(v).replace(/\./g, '')) || 0, parseFloat(String(t).replace(/\./g, '')) || 0))}<div class="gsub">${sub}</div>${extra}</div>`;
   const cells = [];
-  if (day) {
+  const crm = state.crm.find(x => x.id === 'prospeccao')?.dados;
+  const crmAt = state.crm.find(x => x.id === 'prospeccao')?.updatedAt;
+  if (crm && Number.isFinite(Number(crm.meta_diaria))) {   // números vindos do CRM (Agente 5), sem registro manual
+    const hoje = Number(crm.hoje) || 0, md = Number(crm.meta_diaria) || 0, mes = Number(crm.mes) || 0, mm = Number(crm.meta_mensal) || 0;
+    const diffCrm = mes - md * Number(todayStr().slice(8));
+    cells.push(cell('🎯 Prospecção hoje (CRM)', fmtNum(hoje), fmtNum(md), hoje >= md ? 'meta do dia batida! 🎉' : `faltam ${fmtNum(md - hoje)} contatos`));
+    cells.push(cell('📅 Prospecção no mês (CRM)', fmtNum(mes), fmtNum(mm), diffCrm >= 0 ? `no ritmo (+${fmtNum(diffCrm)} à frente)` : `${fmtNum(-diffCrm)} atrás do ritmo`));
+    if (Number.isFinite(Number(crm.meta_fechamentos))) cells.push(cell('🤝 Fechamentos no mês (CRM)', fmtNum(Number(crm.fechamentos_mes) || 0), fmtNum(Number(crm.meta_fechamentos)),
+      `${fmtNum(Number(crm.em_andamento) || 0)} em negociação · taxa de fechamento ${fmtNum(Number(crm.taxa_fechamento) || 0)}%`));
+  } else if (day) {
     const s = goalState(day), mTarget = day.target * 30, mv = goalValue(day, rangeFor('month'));
     const diff = mv - day.target * Number(todayStr().slice(8));
     cells.push(cell('🎯 Prospecção hoje', fmtNum(s.v), fmtNum(day.target), s.done ? 'meta do dia batida! 🎉' : `faltam ${fmtNum(s.left)} contatos`,
       `<div class="gacts"><button class="btn small" data-meta="add" data-id="${day.id}" data-n="1">+1 contato</button><button class="btn small ghost" data-meta="add" data-id="${day.id}" data-n="5">+5</button></div>`));
     cells.push(cell('📅 Prospecção no mês', fmtNum(mv), fmtNum(mTarget), diff >= 0 ? `no ritmo (+${fmtNum(diff)} à frente)` : `${fmtNum(-diff)} atrás do ritmo`));
   }
-  if (closed) { const s = goalState(closed); cells.push(cell('🤝 Clientes fechados no mês', fmtNum(s.v), fmtNum(closed.target), s.done ? 'meta batida! 🎉' : `faltam ${fmtNum(s.left)}`)); }
+  if (closed && !(crm && Number.isFinite(Number(crm.meta_fechamentos)))) { const s = goalState(closed); cells.push(cell('🤝 Clientes fechados no mês', fmtNum(s.v), fmtNum(closed.target), s.done ? 'meta batida! 🎉' : `faltam ${fmtNum(s.left)}`)); }
   if (active) { const s = goalState(active); cells.push(cell('👥 Clientes ativos', fmtNum(s.v), fmtNum(active.target), s.done ? 'meta batida! 🎉' : `faltam ${fmtNum(s.left)} para a meta`)); }
   const ps = parcels(todayStr().slice(0, 7));
   if (ps.length) {
@@ -108,7 +126,7 @@ function growthHTML() {
       <div class="gsub">${atr > 0 ? `<b style="color:var(--alert)">${money(atr)} em atraso</b> · cobrar` : 'nenhum pagamento em atraso'}</div></div>`);
   }
   if (!cells.length) return `<div class="card"><b>🚀 Crescimento</b><p class="muted">Crie as metas de prospecção para acompanhar aqui (10 contatos por dia = 300 por mês).</p><button class="btn primary" data-meta="seed">Criar metas sugeridas</button></div>`;
-  return `<div class="section-title">Crescimento <b>do negócio</b></div><div class="fgrid">${cells.join('')}</div>`;
+  return `<div class="section-title">Crescimento <b>do negócio</b></div><div class="fgrid">${cells.join('')}</div>${linksHTML(crmAt)}`;
 }
 
 function alertItemHTML(a, i) {
