@@ -389,3 +389,23 @@ $('#pwForm').addEventListener('submit', async e => {
   try { await DB.setPassword(a); $('#pwDialog').close(); toast('Senha nova salva. ✓'); }
   catch (err) { msg.textContent = err.message; }
 });
+
+/* mostrar / ocultar senha no login */
+$('#pwToggle').addEventListener('click', () => {
+  const campo = $('#loginPass'), mostra = campo.type === 'password';
+  campo.type = mostra ? 'text' : 'password';
+  $('#pwToggle').textContent = mostra ? 'Ocultar' : 'Mostrar';
+  $('#pwToggle').setAttribute('aria-label', mostra ? 'Ocultar senha' : 'Mostrar senha');
+  $('#pwToggle').setAttribute('aria-pressed', String(mostra));
+});
+
+/* esqueci minha senha: manda o e-mail de recuperação para o endereço digitado */
+$('#forgotBtn').addEventListener('click', async () => {
+  const email = $('#loginEmail').value.trim(), msg = $('#loginError');
+  msg.textContent = '';
+  if (!email) { msg.textContent = 'Digite o seu e-mail acima e clique em "Esqueci minha senha" de novo.'; $('#loginEmail').focus(); return; }
+  try {
+    await DB.resetPassword(email);
+    $('#loginNote').textContent = 'Enviamos um e-mail para ' + email + ' com o link para criar a senha nova. Confira também o spam.';
+  } catch (err) { msg.textContent = err.message; }
+});

@@ -14,7 +14,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261109121626">
+<link rel="stylesheet" href="styles.css?v=20261109133814">
 </head>
 <body>
 
@@ -26,8 +26,9 @@
     <p class="muted">Entre para acessar o painel da JH Company.</p>
     <form id="loginForm">
       <label>E-mail<input type="email" id="loginEmail" required placeholder="voce@email.com"></label>
-      <label>Senha<input type="password" id="loginPass" required placeholder="••••••••"></label>
+      <label>Senha<span class="pwwrap"><input type="password" id="loginPass" required placeholder="••••••••" autocomplete="current-password"><button type="button" class="pwtoggle" id="pwToggle" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></span></label>
       <button class="btn primary" type="submit">Entrar</button>
+      <button type="button" class="linkbtn" id="forgotBtn">Esqueci minha senha</button>
     </form>
     <p class="login-error" id="loginError" role="alert"></p>
     <p class="note" id="loginNote"></p>
@@ -277,19 +278,19 @@
 
 <div id="toast" class="toast hidden"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="config.js?v=20261109121626"></script>
-<script src="icones.js?v=20261109121626"></script>
-<script src="data.js?v=20261109121626"></script>
-<script src="calendar.js?v=20261109121626"></script>
-<script src="metas.js?v=20261109121626"></script>
-<script src="clientes.js?v=20261109121626"></script>
-<script src="agentes.js?v=20261109121626"></script>
-<script src="office.js?v=20261109121626"></script>
-<script src="escritorio.js?v=20261109121626"></script>
-<script src="salas.js?v=20261109121626"></script>
-<script src="financeiro.js?v=20261109121626"></script>
-<script src="alertas.js?v=20261109121626"></script>
-<script src="anuncios.js?v=20261109121626"></script>
-<script src="app.js?v=20261109121626"></script>
+<script src="config.js?v=20261109133814"></script>
+<script src="icones.js?v=20261109133814"></script>
+<script src="data.js?v=20261109133814"></script>
+<script src="calendar.js?v=20261109133814"></script>
+<script src="metas.js?v=20261109133814"></script>
+<script src="clientes.js?v=20261109133814"></script>
+<script src="agentes.js?v=20261109133814"></script>
+<script src="office.js?v=20261109133814"></script>
+<script src="escritorio.js?v=20261109133814"></script>
+<script src="salas.js?v=20261109133814"></script>
+<script src="financeiro.js?v=20261109133814"></script>
+<script src="alertas.js?v=20261109133814"></script>
+<script src="anuncios.js?v=20261109133814"></script>
+<script src="app.js?v=20261109133814"></script>
 </body>
 </html>

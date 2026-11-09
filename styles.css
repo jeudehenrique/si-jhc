@@ -608,3 +608,11 @@ body{font-family:Inter,system-ui,sans-serif;font-size:14.5px;-webkit-font-smooth
 .crm-stats span{display:block;color:var(--muted);font-size:12px;margin-top:4px}.crm-stats p{margin:6px 0 0;color:var(--muted);font-size:13.5px}
 .crm-dash.off .crm-tiles,.crm-dash.off .crm-metas{opacity:.55}
 @media (max-width:760px){.crm-goals,.crm-stats{grid-template-columns:1fr;gap:18px}}
+
+/* login: senha com mostrar/ocultar e esqueci minha senha */
+.pwwrap{position:relative;display:block}
+.pwwrap input{padding-right:84px}
+.pwtoggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:transparent;border:0;color:var(--accent);font:600 12px Inter,system-ui,sans-serif;cursor:pointer;padding:6px 8px;border-radius:8px}
+.pwtoggle:hover{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.linkbtn{background:none;border:0;color:var(--accent);font:500 13px Inter,system-ui,sans-serif;cursor:pointer;margin-top:12px;padding:4px;align-self:center}
+.linkbtn:hover{text-decoration:underline}
