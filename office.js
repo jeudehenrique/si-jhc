@@ -26,7 +26,7 @@ const Office = (() => {
     { skin: '#e0ac85', hair: '#5a5a5a', style: 2 }
   ];
   const ME = { skin: '#e0ac85', hair: '#1a1a1a', style: 0 };
-  const NOMES = { 'Design': 'DESIGN GRÁFICO', 'Edição de vídeo': 'EDIÇÃO DE VÍDEO', 'Gestão de anúncios': 'GESTÃO DE ANÚNCIOS', 'Criação de conteúdo': 'CRIAÇÃO DE CONTEÚDO', 'Programação/Sites': 'SITES', 'SEO': 'SEO', 'Prospecção': 'PROSPECÇÃO', 'Atendimento': 'ATENDIMENTO' };
+  const NOMES = { 'Design': 'DESIGN GRÁFICO', 'Edição de vídeo': 'EDIÇÃO DE VÍDEO', 'Gestão de anúncios': 'GESTÃO ANALÍTICA', 'Criação de conteúdo': 'META ADS', 'Programação/Sites': 'SITES', 'SEO': 'SEO', 'Prospecção': 'PROSPECÇÃO', 'Atendimento': 'ATENDIMENTO' };
   const STATUS = { work: '#22C55E', appr: '#F3B44F', stop: '#8b95a7', late: '#FF8A80', free: '#38BDF8' };
 
   /* ---- projeção e primitivas ---- */
@@ -251,11 +251,12 @@ const Office = (() => {
   };
   // cada setor tem o seu piso colorido, bem delimitado
   function stationFloor(s) {
-    const [x0, y0] = stationOrigin(s.i), acc = ACCENT[s.room];
-    poly(quadPts(x0, y0, .03, 8, 9), mix(acc, .6));
-    for (let i = 1; i < 8; i++) line(P(x0 + i, y0, .04), P(x0 + i, y0 + 9, .04), '#ffffff', .6, 'opacity=".35"');
-    for (let j = 1; j < 9; j++) line(P(x0, y0 + j, .04), P(x0 + 8, y0 + j, .04), '#ffffff', .6, 'opacity=".35"');
-    poly(quadPts(x0, y0, .05, 8, 9), 'none', `stroke="${acc}" stroke-width="3" stroke-linejoin="round"`);
+    if (s.i === 5) return;   // a sala de conteúdo é a mesma sala azul da gestão analítica: um piso só
+    const [x0, y0] = stationOrigin(s.i), acc = ACCENT[s.room], W2 = s.i === 4 ? 16 : 8;
+    poly(quadPts(x0, y0, .03, W2, 9), mix(acc, .6));
+    for (let i = 1; i < W2; i++) line(P(x0 + i, y0, .04), P(x0 + i, y0 + 9, .04), '#ffffff', .6, 'opacity=".35"');
+    for (let j = 1; j < 9; j++) line(P(x0, y0 + j, .04), P(x0 + W2, y0 + j, .04), '#ffffff', .6, 'opacity=".35"');
+    poly(quadPts(x0, y0, .05, W2, 9), 'none', `stroke="${acc}" stroke-width="3" stroke-linejoin="round"`);
   }
   // divisória SÓLIDA na cor do setor, com trilho claro em cima
   function glassWall(face, acc) {
@@ -280,9 +281,10 @@ const Office = (() => {
   }
   function station(s) {
     const [x0, y0] = stationOrigin(s.i);
-    const acc = ACCENT[s.room];
-    if (s.i % 4 > 0) glassWall(faceX(x0, y0, y0 + 9, 0, 2.6), acc);
-    if (s.i >= 4) glassWall(faceY(x0, x0 + 8, y0, 0, 6.1), acc);
+    const acc = s.i === 4 || s.i === 5 ? ACCENT['Gestão de anúncios'] : ACCENT[s.room];   // as duas salas do lado são uma sala azul
+    if (s.i % 4 > 0 && s.i !== 5) glassWall(faceX(x0, y0, y0 + 9, 0, 2.6), acc);   // sem divisória entre elas
+    if (s.i === 4) glassWall(faceY(x0, x0 + 16, y0, 0, 6.1), acc);   // parede do fundo, corrida pelas duas salas
+
     wallSign(x0 + 4, s.i >= 4 ? y0 : 0, NOMES[s.room], acc, !s.hasAgent);
     desk(x0 + 1, y0 + 1.2, 6, 2.6);
     monitor(x0 + 2.7, y0 + 1.7, 2.42, 2.6, s.k);

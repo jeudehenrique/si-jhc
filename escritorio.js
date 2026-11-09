@@ -93,7 +93,7 @@ function emptyRoomHTML(room) {
 
 function sceneHTML(ags) {
   const byKey = Object.fromEntries(ags.map(a => [a.key, a]));
-  const DOLL_ROOM = { 'Design': 'conteudo', 'Edição de vídeo': 'video', 'Gestão de anúncios': 'dashboard', 'Prospecção': 'crm' };   // sala onde fica o boneco de cada agente
+  const DOLL_ROOM = { 'Design': 'conteudo', 'Edição de vídeo': 'video', 'Gestão de anúncios': 'dashboard', 'Criação de conteúdo': 'crm' };   // sala onde fica o boneco de cada agente
   const lab = a => a.k === 'work' ? 'Trabalhando' : 'Livre';
   const st = ROOMS.map((room, i) => {
     const a = byKey[DOLL_ROOM[room]];
