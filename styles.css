@@ -625,3 +625,6 @@ body{font-family:Inter,system-ui,sans-serif;font-size:14.5px;-webkit-font-smooth
 .pbody b{display:block;font-size:15px}
 .pbody small{display:block;color:var(--muted);font-size:13px;margin-top:3px;line-height:1.4}
 .asev.ok{color:var(--ok)}
+
+.pact{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+@media (max-width:760px){.passo{grid-template-columns:34px 1fr}.pact{grid-column:2;flex-direction:row;align-items:center;justify-content:space-between}}

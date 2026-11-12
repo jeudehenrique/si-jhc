@@ -114,12 +114,36 @@ function planoHTML() {
   // 4) follow-ups: voltar a falar com quem já foi contatado
   const p4 = { n: 4, titulo: 'Follow-ups', done: false,
     linhas: ['Volte a conversar com quem já recebeu contato. Veja os follow-ups de hoje no CRM.'] };
-  return `<div class="section-title">Plano <b>de hoje</b></div>
-    <div class="plano">${[p1, p2, p3, p4].map(p => `<div class="card passo ${p.done ? 'ok' : ''}">
-      <div class="pnum">${p.n}</div>
-      <div class="pbody"><b>${esc(p.titulo)}</b>${p.linhas.map(t => `<small>${esc(t)}</small>`).join('')}</div>
-      <span class="asev ${p.done ? 'ok' : 'today'}">${p.done ? 'Em dia' : 'Fazer'}</span></div>`).join('')}</div>`;
+  const marcados = planoFeitos(), nFeitos = [1, 2, 3, 4].filter(n => marcados.includes(n)).length;
+  return `<div class="section-title" style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span>Plano <b>de hoje</b></span><small class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">${nFeitos} de 4 concluídos${nFeitos === 4 ? ' · dia fechado ✓' : ''}</small></div>
+    <div class="plano">${[p1, p2, p3, p4].map(p => {
+      const ok = marcados.includes(p.n);
+      return `<div class="card passo ${ok || p.done ? 'ok' : ''}">
+        <div class="pnum">${p.n}</div>
+        <div class="pbody"><b>${esc(p.titulo)}</b>${p.linhas.map(t => `<small>${esc(t)}</small>`).join('')}</div>
+        <div class="pact"><span class="asev ${ok || p.done ? 'ok' : 'today'}">${ok ? 'Feito' : p.done ? 'Em dia' : 'Fazer'}</span>
+          <button class="btn small ${ok ? '' : 'primary'}" data-plano="${p.n}">${ok ? 'Desmarcar' : 'Marcar como feito'}</button></div></div>`;
+    }).join('')}</div>`;
 }
+
+/* marcar os passos do dia como feitos: fica salvo na SI (tabela settings), então aparece em qualquer aparelho */
+function planoFeitos() {
+  const row = (state.settings || []).find(s => s.key === 'plano-' + todayStr());
+  return row && Array.isArray(row.data.feitos) ? row.data.feitos : [];
+}
+function marcarPlano(n) {
+  const key = 'plano-' + todayStr();
+  let row = state.settings.find(s => s.key === key);
+  if (!row) { row = { id: uid(), key, data: { feitos: [] } }; state.settings.push(row); }
+  const f = new Set(row.data.feitos || []);
+  if (f.has(n)) f.delete(n); else f.add(n);
+  row.data = { feitos: [...f].sort() };
+  persist(); render();
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-plano]');
+  if (b) marcarPlano(Number(b.dataset.plano));
+});
 
 /* Conexões: mostra se cada parte do negócio está mandando notícias para o SI (verde = novidade nas últimas 24 h). */
 function linksHTML(crmAt) {
