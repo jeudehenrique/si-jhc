@@ -78,6 +78,19 @@ function simResultHTML() {
 }
 
 /* ---------- tela ---------- */
+/* Visão anual: quanto entrou em cada ano e as mensalidades de hoje. Valores em dinheiro ficam sempre no Financeiro. */
+function finResumoAnualHTML() {
+  const anos = [...new Set(state.receipts.filter(r => r.paidAt).map(r => r.paidAt.slice(0, 4)))].sort();
+  const recebido = a => state.receipts.filter(r => r.paidAt && r.paidAt.slice(0, 4) === a).reduce((s, r) => s + Number(r.amount), 0);
+  const pagantes = state.clients.filter(c => Number(c.fee) > 0), mrr = pagantes.reduce((s, c) => s + Number(c.fee), 0);
+  const cell = (t, v, sub) => `<div class="card fcell"><small>${t}</small><div class="gnum"><b>${v}</b></div><div class="gsub">${sub}</div></div>`;
+  return `<div class="section-title">Visão <b>anual</b></div><div class="fgrid">
+    ${anos.map(a => cell(`Recebido em ${a}`, money(recebido(a)), a === todayStr().slice(0, 4) ? 'até hoje' : 'ano fechado')).join('')}
+    ${cell('Mensalidades de hoje', money(mrr), `${pagantes.length} clientes pagantes`)}
+    ${cell('Mensalidade média', money(pagantes.length ? mrr / pagantes.length : 0), 'por cliente pagante')}
+  </div>`;
+}
+
 function renderFinanceiro() {
   if (!finMonth) finMonth = todayStr().slice(0, 7);
   const ym = finMonth, t = finTotals(ym), set = finSettings(), sim = set.sim || {};
@@ -107,6 +120,7 @@ function renderFinanceiro() {
     <h1 class="title"><b>FINANCEIRO</b></h1>
   </div>
   ${banner}
+  ${finResumoAnualHTML()}
   <div class="cal-controls"><div class="month-nav">
     <button class="btn ghost small" data-fin="prev" aria-label="Mês anterior">‹</button><b>${monthLabel(ym)}</b>
     <button class="btn ghost small" data-fin="next" aria-label="Próximo mês">›</button><button class="btn ghost small" data-fin="today">Hoje</button>
