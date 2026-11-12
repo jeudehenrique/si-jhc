@@ -83,6 +83,34 @@ function alertOwner(a) {
   return '🧠 Você';
 }
 
+/* Plano de hoje: três passos na ordem do negócio. 1) vender, 2) cuidar dos clientes e dos anúncios, 3) postar o conteúdo do dia.
+   Usa só o que já existe na SI (CRM, resumo dos anúncios e pautas). */
+function planoHTML() {
+  const today = todayStr();
+  const crm = state.crm.find(x => x.id === 'prospeccao')?.dados || null;
+  const meta = crm && Number.isFinite(Number(crm.meta_diaria)) ? Number(crm.meta_diaria) : null;
+  const feitos = crm ? Number(crm.hoje) || 0 : 0;
+  const p1 = { n: 1, titulo: 'Prospectar: trazer cliente novo', done: meta !== null && feitos >= meta,
+    linhas: [meta === null ? 'Ainda sem dados do CRM. Registre seus contatos ou conecte o CRM.' : `${fmtNum(feitos)} de ${fmtNum(meta)} contatos hoje${feitos >= meta ? ' · meta batida' : ` · faltam ${fmtNum(meta - feitos)}`}`] };
+  const ruins = state.ads.filter(x => x.fundsLevel === 'urgente' || x.fundsLevel === 'baixo');
+  const contas = state.ads.length;
+  const p2 = { n: 2, titulo: 'Cuidar dos clientes e dos anúncios', done: contas > 0 && ruins.length === 0,
+    linhas: [
+      contas ? `Revisar os anúncios de ${fmtNum(contas)} conta${contas > 1 ? 's' : ''}: resultado de ontem e dos últimos 3 dias.` : 'Sem resumo dos anúncios ainda. Ligue o Painel Meta Ads.',
+      ...ruins.map(x => `${x.company}: saldo ${x.fundsLevel === 'urgente' ? 'urgente' : 'baixo'}. Avise o cliente e abasteça.`),
+      `Análise semanal: ${weekdayOf(today) === 1 ? 'é hoje (segunda-feira)' : 'a próxima é na segunda-feira'}.`
+    ] };
+  const devidas = state.posts.filter(x => !postReady(x) && x.publishDate <= today);
+  const cname = id => state.clients.find(c => c.id === id)?.name || 'Sem cliente';
+  const dono = x => x.type === 'reels' ? 'Editor de vídeo' : 'Design gráfico';
+  const p3 = { n: 3, titulo: 'Postar o conteúdo do dia', done: devidas.length === 0,
+    linhas: devidas.length ? devidas.sort((a, b) => a.publishDate.localeCompare(b.publishDate)).map(x => `${x.publishDate < today ? 'ATRASADA · ' : ''}${x.title} · ${cname(x.clientId)} · ${dono(x)}`) : ['Nada para postar hoje.'] };
+  return `<div class="section-title">Plano <b>de hoje</b></div>
+    <div class="plano">${[p1, p2, p3].map(p => `<div class="card passo ${p.done ? 'ok' : ''}">
+      <div class="pnum">${p.n}</div>
+      <div class="pbody"><b>${esc(p.titulo)}</b>${p.linhas.map(t => `<small>${esc(t)}</small>`).join('')}</div>
+      <span class="asev ${p.done ? 'ok' : 'today'}">${p.done ? 'Em dia' : 'Fazer'}</span></div>`).join('')}</div>`;
+}
 /* Conexões: mostra se cada parte do negócio está mandando notícias para o SI (verde = novidade nas últimas 24 h). */
 function linksHTML(crmAt) {
   const h = d => d ? (Date.now() - new Date(d).getTime()) / 36e5 : Infinity;
@@ -172,6 +200,7 @@ function renderAlertas() {
   const titles = { late: 'Resolver agora (atrasado)', today: 'Para hoje', soon: 'Nos próximos dias' };
   const first = alertList[0];
   return `<div class="page-head"><h1 class="title">FOCO <b>DO DIA</b></h1></div>
+    ${planoHTML()}
     ${growthHTML()}
     ${alertList.length ? `<p class="callout">${first ? `<b style="color:var(--text)">Comece por aqui:</b> ${esc(first.text)} (${alertOwner(first)}). ` : ''}${alertList.length} ${alertList.length > 1 ? 'itens pedem' : 'item pede'} ação, do mais importante para o menos. Toque num item para resolver.</p>`
       : '<div class="card empty">Nada pedindo ação agora. 🎉<br>Tudo em dia.</div>'}

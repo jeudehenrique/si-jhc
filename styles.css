@@ -616,3 +616,12 @@ body{font-family:Inter,system-ui,sans-serif;font-size:14.5px;-webkit-font-smooth
 .pwtoggle:hover{background:color-mix(in srgb,var(--accent) 12%,transparent)}
 .linkbtn{background:none;border:0;color:var(--accent);font:500 13px Inter,system-ui,sans-serif;cursor:pointer;margin-top:12px;padding:4px;align-self:center}
 .linkbtn:hover{text-decoration:underline}
+
+/* plano de hoje */
+.plano{display:grid;gap:10px;margin-bottom:6px}
+.passo{display:grid;grid-template-columns:34px 1fr auto;gap:14px;align-items:center;padding:14px 16px}
+.pnum{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent)}
+.passo.ok .pnum{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
+.pbody b{display:block;font-size:15px}
+.pbody small{display:block;color:var(--muted);font-size:13px;margin-top:3px;line-height:1.4}
+.asev.ok{color:var(--ok)}
