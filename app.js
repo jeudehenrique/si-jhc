@@ -375,6 +375,16 @@ async function refreshData() {
     if (JSON.stringify(fresh) !== JSON.stringify(state)) { state = fresh; render(); }
   } catch (err) { console.warn('Atualização automática falhou:', err); }
 }
+/* Foco do dia vira o dia sozinho: se o dia (ou a hora, para o alerta das 17h) mudar com a tela aberta, redesenha mesmo sem dado novo */
+let diaDaTela = todayStr(), horaDaTela = new Date().getHours();
+function virouODia() {
+  if (todayStr() === diaDaTela && new Date().getHours() === horaDaTela) return;
+  if (document.querySelector('dialog[open]') || document.activeElement?.matches('input, textarea, select')) return;
+  diaDaTela = todayStr(); horaDaTela = new Date().getHours(); render();
+}
+setInterval(virouODia, 60000);
+window.addEventListener('focus', virouODia);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) virouODia(); });
 setInterval(refreshData, 60000);
 window.addEventListener('focus', refreshData);
 

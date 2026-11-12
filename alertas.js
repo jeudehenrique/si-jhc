@@ -39,6 +39,12 @@ function computeAlerts() {
   state.posts.filter(p => p.status === 'todo' && /tema a definir/i.test(p.title) && p.publishDate >= today && p.publishDate <= addDays(today, 7)
       && p.deliveryDate > soon).forEach(p =>
     add('soon', '📝', `Falta definir o tema: ${POST_TYPES[p.type].label} de ${fmtDate(p.publishDate)}`, `${cname(p.clientId)} · publica em ${day(p.publishDate)}`, { post: p.id }));
+  // follow-ups: o que não foi marcado como feito sobe como pendência
+  const diaAnt = planoDiaUtilAnterior(today);
+  if (!planoFeitos(diaAnt).includes(4)) add('late', '💬', `Follow-ups de ${fmtDate(diaAnt)} não foram feitos`, 'volte a conversar com quem já recebeu contato e marque como feito no Foco do dia', { go: 'alertas' });
+  if (![0, 6].includes(weekdayOf(today)) && new Date().getHours() >= 17 && !planoFeitos(today).includes(4)) add('today', '💬', 'Follow-ups de hoje ainda não foram feitos', 'faça os follow-ups ou marque como feito no Foco do dia', { go: 'alertas' });
+  const fuCrm = Number(state.crm?.find(x => x.id === 'prospeccao')?.dados?.followups_atrasados) || 0;
+  if (fuCrm > 0) add('late', '💬', `${fmtNum(fuCrm)} follow-up${fuCrm > 1 ? 's' : ''} atrasado${fuCrm > 1 ? 's' : ''} no CRM`, 'abra o CRM e retome essas conversas', { go: 'alertas' });
   // agentes
   AGENTS.filter(x => x.key !== 'gerente' && x.key !== 'dashboard').map(agentInfo).forEach(a => {
     if (a.fresh && a.row.status === 'aguardando') add('today', '⏳', `${a.title} espera a sua aprovação`, a.task || 'veja o que ele entregou', { go: 'escritorio' });
@@ -68,6 +74,7 @@ function alertWeight(a) {
   let w = SEV_ORDER[a.sev] * 100;
   if (a.icon === '💰') w += 0;
   else if (a.icon === '📣') w += 10;
+  else if (a.icon === '💬') w += 12;
   else if (x.demand) w += 20 + ({ alta: 0, media: 5, baixa: 10 }[state.demands.find(q => q.id === x.demand)?.priority] ?? 5);
   else if (x.post) w += 40;
   else w += 60;
@@ -80,6 +87,7 @@ function alertOwner(a) {
   if (x.post) return state.posts.find(q => q.id === x.post)?.type === 'reels' ? '🎬 Editor de vídeo' : '🖼️ Design gráfico';
   if (a.icon === '💰') return '🧠 Você: cobrar';
   if (a.icon === '📣') return '📊 Gestor dashboard';
+  if (a.icon === '💬') return '💬 CRM e WhatsApp';
   return '🧠 Você';
 }
 
@@ -115,7 +123,12 @@ function planoHTML() {
   const p4 = { n: 4, titulo: 'Follow-ups', done: false,
     linhas: ['Volte a conversar com quem já recebeu contato. Veja os follow-ups de hoje no CRM.'] };
   const marcados = planoFeitos(), nFeitos = [1, 2, 3, 4].filter(n => marcados.includes(n)).length;
-  return `<div class="section-title" style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span>Plano <b>de hoje</b></span><small class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">${nFeitos} de 4 concluídos${nFeitos === 4 ? ' · dia fechado ✓' : ''}</small></div>
+  const diaAnt = planoDiaUtilAnterior(today), marcAnt = planoFeitos(diaAnt);
+  const ontem = [[1, 'Campanhas'], [4, 'Follow-ups']].filter(([n]) => !marcAnt.includes(n));
+  const blocoOntem = ontem.length ? `<div class="card plano-ontem"><b>Pendente de ${WEEKDAYS[weekdayOf(diaAnt)]}, ${fmtDate(diaAnt)}</b><small>O que ficou sem marcar como feito no dia útil anterior. Faça e marque, ou marque se já foi feito.</small>
+      ${ontem.map(([n, t]) => `<div class="plano-ontem-linha"><span>${t}</span><button class="btn small primary" data-plano="${n}" data-dia="${diaAnt}">Marcar como feito</button></div>`).join('')}</div>` : '';
+  return `<div class="section-title" style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span>Plano <b>de hoje</b> · ${WEEKDAYS[weekdayOf(today)]}, ${fmtDate(today)}</span><small class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">${nFeitos} de 4 concluídos${nFeitos === 4 ? ' · dia fechado ✓' : ''}</small></div>
+    ${blocoOntem}
     <div class="plano">${[p1, p2, p3, p4].map(p => {
       const ok = marcados.includes(p.n);
       return `<div class="card passo ${ok || p.done ? 'ok' : ''}">
@@ -127,12 +140,14 @@ function planoHTML() {
 }
 
 /* marcar os passos do dia como feitos: fica salvo na SI (tabela settings), então aparece em qualquer aparelho */
-function planoFeitos() {
-  const row = (state.settings || []).find(s => s.key === 'plano-' + todayStr());
+function planoFeitos(dia = todayStr()) {
+  const row = (state.settings || []).find(s => s.key === 'plano-' + dia);
   return row && Array.isArray(row.data.feitos) ? row.data.feitos : [];
 }
-function marcarPlano(n) {
-  const key = 'plano-' + todayStr();
+// último dia útil (segunda a sexta) antes de hoje: é o dia cujo plano precisa ter sido concluído
+function planoDiaUtilAnterior(hoje = todayStr()) { let d = addDays(hoje, -1); while ([0, 6].includes(weekdayOf(d))) d = addDays(d, -1); return d; }
+function marcarPlano(n, dia = todayStr()) {
+  const key = 'plano-' + dia;
   let row = state.settings.find(s => s.key === key);
   if (!row) { row = { id: uid(), key, data: { feitos: [] } }; state.settings.push(row); }
   const f = new Set(row.data.feitos || []);
@@ -142,7 +157,7 @@ function marcarPlano(n) {
 }
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-plano]');
-  if (b) marcarPlano(Number(b.dataset.plano));
+  if (b) marcarPlano(Number(b.dataset.plano), b.dataset.dia || todayStr());
 });
 
 /* Conexões: mostra se cada parte do negócio está mandando notícias para o SI (verde = novidade nas últimas 24 h). */

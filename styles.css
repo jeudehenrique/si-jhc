@@ -743,3 +743,7 @@ body{font-family:Inter,system-ui,sans-serif;font-size:14.5px;-webkit-font-smooth
 .crc-meta-fixa input{width:190px;padding:8px 12px;font-size:20px;font-weight:600}
 .crc-cen4>div{grid-template-columns:1fr 1.2fr 1.2fr 1.2fr}
 .crc-conta .crc-cen{margin-top:14px}
+
+.plano-ontem{margin-bottom:10px;border-color:color-mix(in srgb,var(--gold) 55%,var(--border));background:color-mix(in srgb,var(--gold) 7%,var(--surface))}
+.plano-ontem b{display:block}.plano-ontem small{display:block;color:var(--muted);margin:2px 0 10px}
+.plano-ontem-linha{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border-top:1px solid var(--border)}
