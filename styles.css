@@ -755,3 +755,9 @@ body.priv-on .vv{color:var(--muted);letter-spacing:.04em}
 #privBtn{display:inline-flex;align-items:center;gap:6px}
 #privBtn .ic{width:18px;height:18px}
 body.priv-on #privBtn{border-color:color-mix(in srgb,var(--gold) 55%,var(--border));color:var(--gold)}
+
+/* menu lateral e topo fixos ao rolar a página (só em tela larga) */
+@media (min-width:761px){
+  .topbar{position:sticky;top:0;z-index:30}
+  .nav{position:sticky;top:var(--top-h,65px);align-self:start;height:calc(100vh - var(--top-h,65px));overflow-y:auto}
+}

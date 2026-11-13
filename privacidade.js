@@ -18,6 +18,7 @@ const privMascara = v => /R\$/.test(v) ? 'R$ ••••' : /^margem/.test(v) ?
 const PRIV_CAMPOS = '#kFee, #kPhone, #gTarget, #lAmount, #fcAmount, #fiAmount, #finGoal, #simSalary, #simBenefits, #crMetaInput, #crEstrCusto, [data-cr-field], [data-cr-estr-custo], [data-cr-est$="|invest"]';
 
 function privProcessar() {
+  privTopo();
   const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
     acceptNode: n => {
       if (!n.parentElement || n.parentElement.closest('script,style,textarea,input,option,select,svg,.vv,.crc-n,.pnum,.crc-tab')) return NodeFilter.FILTER_REJECT;
@@ -65,3 +66,7 @@ document.body.classList.add('priv-on');
 document.addEventListener('click', e => { if (e.target.closest('#privBtn')) privAlternar(); });
 privProcessar(); privAtualizarBotao();
 privObs.observe(document.body, { childList: true, subtree: true, characterData: true });
+
+// guarda a altura real do topo para o menu lateral ficar fixo logo abaixo dele
+function privTopo() { const t = document.querySelector('.topbar'); if (t && t.offsetHeight) document.documentElement.style.setProperty('--top-h', t.offsetHeight + 'px'); }
+window.addEventListener('resize', privTopo); window.addEventListener('load', privTopo); privTopo();
