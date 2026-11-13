@@ -21,7 +21,8 @@ function agentInfo(a) {
   // Agente 6: se o CRM enviou números há poucos minutos, você está prospectando/no CRM agora: fica como "trabalhando"
   let crmTask = '';
   if (a.key === 'crm') {
-    const rc = state.crm.find(x => x.id === 'prospeccao'), at = rc && (rc.dados?.atualizado_em || rc.updatedAt);
+    const nuv = typeof crmNuvem === 'function' ? crmNuvem() : null;
+    const rc = state.crm.find(x => x.id === 'prospeccao'), at = nuv ? nuv.ultimaMensagem : rc && (rc.dados?.atualizado_em || rc.updatedAt);
     if (at && Date.now() - new Date(at) < 15 * 60e3) { working = true; crmTask = 'Prospectando no CRM'; }
   }
   let dem = 0, posts = 0, late = 0, pend = 0, accts = 0;

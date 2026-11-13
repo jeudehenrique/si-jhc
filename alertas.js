@@ -91,6 +91,22 @@ function alertOwner(a) {
   return '🧠 Você';
 }
 
+/* Números do CRM direto da nuvem (mesmo banco da SI, só leitura). Se a tabela ainda não existir, volta a usar o resumo antigo. */
+function crmNuvem() {
+  const E = state.crmEmpresas || [], M = state.crmMensagens || [];
+  if (!E.length && !M.length) return null;
+  const hoje = todayStr(), dia = s => String(s || '').slice(0, 10);
+  const etapa = s => (state.crmEtapas || []).find(x => x.id === s)?.nome || s;
+  const porEtapa = {};
+  E.forEach(e => { const n = etapa(e.status); porEtapa[n] = (porEtapa[n] || 0) + 1; });
+  const ultima = M.reduce((m, x) => (x.enviadoEm && (!m || x.enviadoEm > m) ? x.enviadoEm : m), null);
+  return { total: E.length, hoje: E.filter(e => dia(e.dataCadastro) === hoje).length,
+    desqualificadas: E.filter(e => /desqualific/i.test(etapa(e.status))).length,
+    clientes: E.filter(e => /novo cliente/i.test(etapa(e.status))).length,
+    emAndamento: E.filter(e => !/desqualific|sem interesse|novo cliente/i.test(etapa(e.status))).length,
+    porEtapa, ultimaMensagem: ultima };
+}
+
 /* Plano de hoje: três passos na ordem do negócio. 1) vender, 2) cuidar dos clientes e dos anúncios, 3) postar o conteúdo do dia.
    Usa só o que já existe na SI (CRM, resumo dos anúncios e pautas). */
 function planoHTML() {
@@ -99,7 +115,8 @@ function planoHTML() {
   const meta = crm && Number.isFinite(Number(crm.meta_diaria)) ? Number(crm.meta_diaria) : null;
   const rowCrm = state.crm.find(x => x.id === 'prospeccao'), atCrm = crm && (crm.atualizado_em || rowCrm?.updatedAt);
   // só vale se o CRM enviou os números hoje (senão o "hoje" seria de outro dia)
-  const feitos = crm && atCrm && new Date(atCrm).toDateString() === new Date().toDateString() ? Number(crm.hoje) || 0 : 0;
+  const nuvem = crmNuvem();
+  const feitos = nuvem ? nuvem.hoje : crm && atCrm && new Date(atCrm).toDateString() === new Date().toDateString() ? Number(crm.hoje) || 0 : 0;
   // 1) 8h: campanhas. Abre o painel, vê o que está funcionando, anota as otimizações e avisa quem precisa abastecer.
   const ruins = state.ads.filter(x => x.fundsLevel === 'urgente' || x.fundsLevel === 'baixo');
   const contas = state.ads.length;
