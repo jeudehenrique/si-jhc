@@ -7,7 +7,8 @@ const AGENTS = [
   { key: 'conteudo', num: 2, title: 'Design gráfico', icon: '🖼️', rooms: ['Criação de conteúdo', 'Design'], postTypes: ['carrossel', 'post'], folder: 'Criador de iamgesn' },
   { key: 'video', num: 3, title: 'Editor de vídeo', icon: '🎬', rooms: ['Edição de vídeo'], postTypes: ['reels'], folder: 'CLAUDE EDIÇÃO DE VIDEO' },
   { key: 'dashboard', num: 4, title: 'Gestor dashboard', icon: '📊', rooms: ['Gestão de anúncios'], postTypes: [], folder: 'Painel Meta Ads (C:\\Projetos)' },
-  { key: 'crm', num: 5, title: 'CRM e WhatsApp', icon: '💬', rooms: ['Prospecção', 'Atendimento'], postTypes: [], folder: 'CRM BOOT JHC (JH Company)' }
+  { key: 'metaads', num: 5, title: 'Gestor MetaAds', icon: '🎯', rooms: [], postTypes: [], folder: 'a definir (sala Meta Ads)' },
+  { key: 'crm', num: 6, title: 'Prospecção / CRM', icon: '💬', rooms: ['Prospecção', 'Atendimento'], postTypes: [], folder: 'CRM BOOT JHC (JH Company)' }
 ];
 // "trabalhando" só vale se o agente deu notícia nas últimas horas (se esquecer de avisar que acabou, volta a "livre")
 const AGENT_FRESH_HOURS = 4;
@@ -16,7 +17,13 @@ const AGENT_LABEL = { work: 'Trabalhando', free: 'Livre' };
 function agentInfo(a) {
   const row = state.agents.find(x => x.key === a.key);
   const fresh = !!(row && row.updatedAt && Date.now() - new Date(row.updatedAt) < AGENT_FRESH_HOURS * 3600e3);
-  const working = fresh && (row.status === 'trabalhando' || row.status === 'aguardando');
+  let working = fresh && (row.status === 'trabalhando' || row.status === 'aguardando');
+  // Agente 6: se o CRM enviou números há poucos minutos, você está prospectando/no CRM agora: fica como "trabalhando"
+  let crmTask = '';
+  if (a.key === 'crm') {
+    const rc = state.crm.find(x => x.id === 'prospeccao'), at = rc && (rc.dados?.atualizado_em || rc.updatedAt);
+    if (at && Date.now() - new Date(at) < 15 * 60e3) { working = true; crmTask = 'Prospectando no CRM'; }
+  }
   let dem = 0, posts = 0, late = 0, pend = 0, accts = 0;
   if (a.key === 'gerente') {   // notificação do gerente = alertas urgentes de toda a SI
     const urgent = computeAlerts().filter(x => x.sev !== 'soon');
@@ -31,7 +38,7 @@ function agentInfo(a) {
       accts = bad.length; pend += accts; late += state.ads.filter(x => x.fundsLevel === 'urgente').length;
     }
   }
-  return { ...a, row, fresh, dem, posts, accts, pend, late, k: working ? 'work' : 'free', task: working && row.task ? row.task : '' };
+  return { ...a, row, fresh, dem, posts, accts, pend, late, k: working ? 'work' : 'free', task: working && row?.task ? row.task : crmTask };
 }
 function timeAgo(isoStr) {
   if (!isoStr) return '';

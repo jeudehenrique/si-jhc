@@ -87,7 +87,7 @@ function alertOwner(a) {
   if (x.post) return state.posts.find(q => q.id === x.post)?.type === 'reels' ? '🎬 Editor de vídeo' : '🖼️ Design gráfico';
   if (a.icon === '💰') return '🧠 Você: cobrar';
   if (a.icon === '📣') return '📊 Gestor dashboard';
-  if (a.icon === '💬') return '💬 CRM e WhatsApp';
+  if (a.icon === '💬') return '💬 Prospecção / CRM';
   return '🧠 Você';
 }
 
@@ -97,7 +97,9 @@ function planoHTML() {
   const today = todayStr();
   const crm = state.crm.find(x => x.id === 'prospeccao')?.dados || null;
   const meta = crm && Number.isFinite(Number(crm.meta_diaria)) ? Number(crm.meta_diaria) : null;
-  const feitos = crm ? Number(crm.hoje) || 0 : 0;
+  const rowCrm = state.crm.find(x => x.id === 'prospeccao'), atCrm = crm && (crm.atualizado_em || rowCrm?.updatedAt);
+  // só vale se o CRM enviou os números hoje (senão o "hoje" seria de outro dia)
+  const feitos = crm && atCrm && new Date(atCrm).toDateString() === new Date().toDateString() ? Number(crm.hoje) || 0 : 0;
   // 1) 8h: campanhas. Abre o painel, vê o que está funcionando, anota as otimizações e avisa quem precisa abastecer.
   const ruins = state.ads.filter(x => x.fundsLevel === 'urgente' || x.fundsLevel === 'baixo');
   const contas = state.ads.length;
@@ -108,7 +110,7 @@ function planoHTML() {
       ...ruins.map(x => `Avise o responsável: ${x.company} está com saldo ${x.fundsLevel === 'urgente' ? 'urgente' : 'baixo'}. Precisa abastecer.`)
     ] };
   // 2) prospecção no bloco certo, depois da revisão das campanhas
-  const p2 = { n: 2, titulo: 'Prospecção: trazer cliente novo', done: meta !== null && feitos >= meta,
+  const p2 = { n: 2, titulo: 'Prospecção: trazer cliente novo', auto: true, done: meta !== null && meta > 0 && feitos >= meta,
     linhas: [meta === null ? 'Ainda sem dados do CRM. Registre seus contatos ou conecte o CRM.' : `${fmtNum(feitos)} de ${fmtNum(meta)} contatos hoje${feitos >= meta ? ' · meta batida' : ` · faltam ${fmtNum(meta - feitos)}`}`] };
   // 3) conteúdo: se houver demanda, faz; se não, segue para os follow-ups. Na segunda, planeja a semana.
   const devidas = state.posts.filter(x => !postReady(x) && x.publishDate <= today);
@@ -122,7 +124,7 @@ function planoHTML() {
   // 4) follow-ups: voltar a falar com quem já foi contatado
   const p4 = { n: 4, titulo: 'Follow-ups', done: false,
     linhas: ['Volte a conversar com quem já recebeu contato. Veja os follow-ups de hoje no CRM.'] };
-  const marcados = planoFeitos(), nFeitos = [1, 2, 3, 4].filter(n => marcados.includes(n)).length;
+  const marcados = planoFeitos().concat(p2.done ? [2] : []), nFeitos = [1, 2, 3, 4].filter(n => marcados.includes(n)).length;   // prospecção bateu a meta no CRM: já conta como feita
   const diaAnt = planoDiaUtilAnterior(today), marcAnt = planoFeitos(diaAnt);
   const ontem = [[1, 'Campanhas'], [4, 'Follow-ups']].filter(([n]) => !marcAnt.includes(n));
   const blocoOntem = ontem.length ? `<div class="card plano-ontem"><b>Pendente de ${WEEKDAYS[weekdayOf(diaAnt)]}, ${fmtDate(diaAnt)}</b><small>O que ficou sem marcar como feito no dia útil anterior. Faça e marque, ou marque se já foi feito.</small>
@@ -135,7 +137,7 @@ function planoHTML() {
         <div class="pnum">${p.n}</div>
         <div class="pbody"><b>${esc(p.titulo)}</b>${p.linhas.map(t => `<small>${esc(t)}</small>`).join('')}</div>
         <div class="pact"><span class="asev ${ok || p.done ? 'ok' : 'today'}">${ok ? 'Feito' : p.done ? 'Em dia' : 'Fazer'}</span>
-          <button class="btn small ${ok ? '' : 'primary'}" data-plano="${p.n}">${ok ? 'Desmarcar' : 'Marcar como feito'}</button></div></div>`;
+          ${p.auto && p.done ? '<small class="muted">Automático pelo CRM</small>' : `<button class="btn small ${ok ? '' : 'primary'}" data-plano="${p.n}">${ok ? 'Desmarcar' : 'Marcar como feito'}</button>`}</div></div>`;
     }).join('')}</div>`;
 }
 
@@ -169,7 +171,7 @@ function linksHTML(crmAt) {
   return `<div class="flinks">${items.map(([n, d]) => `<span class="flink ${h(d) <= 24 ? 'ok' : ''}" title="${d ? 'última novidade ' + timeAgo(d) : 'ainda sem novidades'}"><i></i>${n}</span>`).join('')}</div>`;
 }
 
-/* Resumo do CRM (Agente 5) no mesmo desenho do dashboard dele: Empresas, Metas de prospecção e totais.
+/* Resumo do CRM (Agente 6) no mesmo desenho do dashboard dele: Empresas, Metas de prospecção e totais.
    Os números vêm da tabela metricas_crm (chave prospeccao), atualizada a cada minuto como o resto do painel.
    Campos opcionais que o CRM pode acrescentar depois (aparecem sozinhos quando existirem):
    total_empresas, em_negociacao, clientes_fechados, followups_hoje, followups_atrasados. */

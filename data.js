@@ -60,7 +60,7 @@ const DB = (() => {
         spend7d: r.spend_7d === null ? null : Number(r.spend_7d), spendMonth: r.spend_month === null ? null : Number(r.spend_month),
         results7d: r.results_7d, costPerResult: r.cost_per_result === null ? null : Number(r.cost_per_result),
         funds: r.funds === null ? null : Number(r.funds), fundsType: r.funds_type, fundsLevel: r.funds_level, delivery: r.delivery, syncedAt: r.synced_at }) },
-    // números do CRM (Agente 5): só LEITURA aqui; o CRM escreve com a chave secreta dele (tabela metricas_crm)
+    // números do CRM (Agente 6): só LEITURA aqui; o CRM escreve com a chave secreta dele (tabela metricas_crm)
     { key: 'crm', table: 'metricas_crm', optional: true, readonly: true,
       to: m => ({ id: m.id }),
       from: r => ({ id: r.chave, dados: r.dados || {}, updatedAt: r.atualizado_em }) },
