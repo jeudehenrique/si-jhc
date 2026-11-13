@@ -747,3 +747,11 @@ body{font-family:Inter,system-ui,sans-serif;font-size:14.5px;-webkit-font-smooth
 .plano-ontem{margin-bottom:10px;border-color:color-mix(in srgb,var(--gold) 55%,var(--border));background:color-mix(in srgb,var(--gold) 7%,var(--surface))}
 .plano-ontem b{display:block}.plano-ontem small{display:block;color:var(--muted);margin:2px 0 10px}
 .plano-ontem-linha{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border-top:1px solid var(--border)}
+
+/* modo privacidade */
+.vv{white-space:nowrap}
+body.priv-on .vv{color:var(--muted);letter-spacing:.04em}
+.priv-campo{-webkit-text-security:disc;text-security:disc;letter-spacing:.12em}
+#privBtn{display:inline-flex;align-items:center;gap:6px}
+#privBtn .ic{width:18px;height:18px}
+body.priv-on #privBtn{border-color:color-mix(in srgb,var(--gold) 55%,var(--border));color:var(--gold)}
