@@ -196,9 +196,12 @@ function prospeccaoHTML() {
   const row = state.crm.find(x => x.id === 'prospeccao');
   const head = right => `<div class="section-title" style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span>Resumo <b>do CRM</b></span>${right || ''}</div>`;
   if (!row) return `${head()}<div class="card"><p class="muted" style="margin:0">Sem dados do CRM ainda.</p></div>`;
-  const d = row.dados || {}, num = v => Number.isFinite(Number(v)) ? Number(v) : 0, has = v => v !== null && v !== undefined && Number.isFinite(Number(v));
-  const at = d.atualizado_em || row.updatedAt, min = at ? (Date.now() - new Date(at)) / 60000 : Infinity;
-  const off = !(min <= 30), hh = at ? new Date(at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '--:--';
+  // com o CRM da nuvem, os números vêm dele (total, hoje, em andamento, desqualificadas); senão, do resumo antigo
+  const nuv = crmNuvem();
+  const d = nuv ? { ...(row.dados || {}), total_empresas: nuv.total, hoje: nuv.hoje, em_andamento: nuv.emAndamento, desqualificadas: nuv.desqualificadas, fechamentos_mes: nuv.clientes } : (row.dados || {});
+  const num = v => Number.isFinite(Number(v)) ? Number(v) : 0, has = v => v !== null && v !== undefined && Number.isFinite(Number(v));
+  const at = nuv ? nuv.ultimaMensagem || d.atualizado_em || row.updatedAt : d.atualizado_em || row.updatedAt, min = at ? (Date.now() - new Date(at)) / 60000 : Infinity;
+  const off = nuv ? false : !(min <= 30), hh = at ? new Date(at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '--:--';
   const pct1 = v => num(v).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   const tile = (lbl, v, sub) => `<div class="crm-tile"><small>${lbl}</small><b>${fmtNum(v)}</b>${sub ? `<span>${sub}</span>` : ''}</div>`;
   const goal = (lbl, v, m, cap) => { const p = m > 0 ? Math.round(v / m * 100) : 0; return `<div class="crm-goal"><div class="crm-goal-top"><span>${lbl}</span><b>${fmtNum(v)}<small> / ${fmtNum(m)}</small><em>${p}%</em></b></div>
