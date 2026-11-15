@@ -67,13 +67,13 @@ const DB = (() => {
     // CRM na nuvem (mesmo banco da SI): só LEITURA. Mostra o funil real do CRM que você usa no link.
     { key: 'crmEmpresas', table: 'empresas', optional: true, readonly: true,
       to: e => ({ id: e.id }),
-      from: r => ({ id: r.id, nome: r.nome_empresa, status: r.status, dataCadastro: r.data_cadastro, proximoFollowup: r.proximo_followup }) },
+      from: r => { const d = r.dados || {}; return { id: r.id, nome: d.nome_empresa, status: d.status, dataCadastro: d.data_cadastro, proximoFollowup: d.proximo_followup }; } },
     { key: 'crmMensagens', table: 'mensagens', optional: true, readonly: true,
       to: m => ({ id: m.id }),
-      from: r => ({ id: r.id, empresaId: r.empresa_id, direcao: r.direcao, enviadoEm: r.data_envio }) },
+      from: r => { const d = r.dados || {}; return { id: r.id, empresaId: d.empresa_id, direcao: d.direcao, enviadoEm: d.data_envio }; } },
     { key: 'crmEtapas', table: 'etapas', optional: true, readonly: true,
       to: e => ({ id: e.id }),
-      from: r => ({ id: r.id, nome: r.nome, ordem: r.ordem }) },
+      from: r => { const d = r.dados || {}; return { id: r.id, nome: d.nome, ordem: d.ordem }; } },
     { key: 'settings', table: 'settings', optional: true,
       to: s => ({ id: s.id, key: s.key, data: s.data || {} }),
       from: r => ({ id: r.id, key: r.key, data: r.data || {} }) }
