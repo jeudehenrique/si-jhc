@@ -101,9 +101,9 @@ function crmNuvem() {
   E.forEach(e => { const n = etapa(e.status); porEtapa[n] = (porEtapa[n] || 0) + 1; });
   const ultima = M.reduce((m, x) => (x.enviadoEm && (!m || x.enviadoEm > m) ? x.enviadoEm : m), null);
   return { total: E.length, hoje: E.filter(e => dia(e.dataCadastro) === hoje).length,
-    desqualificadas: E.filter(e => /desqualific/i.test(etapa(e.status))).length,
+    desqualificadas: E.filter(e => /desqualific|sem interesse/i.test(etapa(e.status))).length,
     clientes: E.filter(e => /novo cliente/i.test(etapa(e.status))).length,
-    emAndamento: E.filter(e => !/desqualific|sem interesse|novo cliente/i.test(etapa(e.status))).length,
+    emAndamento: E.filter(e => !/desqualific|sem interesse|novo cliente|em fechamento/i.test(etapa(e.status))).length,
     porEtapa, ultimaMensagem: ultima };
 }
 
