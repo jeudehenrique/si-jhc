@@ -435,6 +435,9 @@ dialog{max-height:92vh;overflow:auto}
 .sala-tools code{font-size:12px;word-break:break-all}
 .rgrid.agents{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
 @media (max-width:900px){.sala-top{grid-template-columns:1fr}}
+.feito-linha{display:flex;align-items:center;gap:10px}
+.feito-linha > .item,.feito-linha > .pitem{flex:1;min-width:0}
+.feito-linha > .btn{flex-shrink:0;white-space:nowrap}
 @media (max-width:760px){.navsep,.nav button.agentlink{display:none}}
 
 /* maquete: uma etiqueta clara por personagem */

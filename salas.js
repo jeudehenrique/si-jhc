@@ -36,6 +36,21 @@ function pedidoParaAgente(a) {
   return `Olá! Sou o gerente da SI. Estas são as suas pendências agora (Agente ${a.num} · ${a.title}):\n${linhas.join('\n') || '- (nenhuma pendência no momento)'}\n\nComece pela mais urgente e me mostre a prévia antes de entregar.`;
 }
 
+/* botão "✓ Feita" ao lado de cada pendência: demanda vira Concluída; pauta vira Pronto */
+const feitoLinha = (tipo, id, html) => `<div class="feito-linha">${html}<button class="btn small ghost" data-feito="${tipo}" data-id="${id}">✓ Feita</button></div>`;
+function marcarFeito(tipo, id) {
+  if (tipo === 'demanda') {
+    const d = state.demands.find(x => x.id === id);
+    if (!d) return;
+    d.status = 'done'; d.doneAt = new Date().toISOString();
+  } else {
+    const p = state.posts.find(x => x.id === id);
+    if (!p) return;
+    p.status = 'ready';
+  }
+  persist(); render(); toast('Pendência marcada como feita.');
+}
+
 function renderSala(key) {
   const a = AGENTS.map(agentInfo).find(x => x.key === key);
   if (!a || key === 'gerente') return '<div class="card empty">Sala não encontrada.</div>';
@@ -51,12 +66,14 @@ function renderSala(key) {
     </div>
   </div>
   <div class="section-title">Pendências <b>desta área</b> (${dem.length + posts.length + contas.length})</div>
-  <div class="list">${dem.map(itemHTML).join('')}${posts.map(postItemHTML).join('')}
+  <div class="list">${dem.map(d => feitoLinha('demanda', d.id, itemHTML(d))).join('')}${posts.map(p => feitoLinha('pauta', p.id, postItemHTML(p))).join('')}
     ${contas.map(c => `<div class="alert ${c.fundsLevel === 'urgente' ? 'late' : 'today'}" data-view="painel" tabindex="0" role="button"><span class="aico">📣</span><div class="abody"><b>${esc(c.company)}: saldo ${c.fundsLevel === 'urgente' ? 'urgente' : 'baixo'} (${money(c.funds || 0)})</b><small>abastecer no Gerenciador da Meta</small></div><span class="asev ${c.fundsLevel === 'urgente' ? 'late' : 'today'}">${c.fundsLevel === 'urgente' ? 'Urgente' : 'Baixo'}</span></div>`).join('')}
     ${dem.length + posts.length + contas.length ? '' : '<div class="card empty">Nenhuma pendência nesta área. 🎉</div>'}</div>`;
 }
 
 document.addEventListener('click', async e => {
+  const f = e.target.closest('[data-feito]');
+  if (f) { marcarFeito(f.dataset.feito, f.dataset.id); return; }
   const b = e.target.closest('[data-sala]'); if (!b) return;
   const key = b.dataset.key, t = SALA[key] || {}, a = AGENTS.map(agentInfo).find(x => x.key === key);
   if (b.dataset.sala === 'pedido') return toast(await copiar(pedidoParaAgente(a)) ? 'Pedido copiado. Cole na conversa do agente.' : 'Não consegui copiar automaticamente.', 3500);
