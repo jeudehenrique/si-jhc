@@ -59,7 +59,7 @@ function toast(msg, ms = 2200) {
 }
 
 /* ---------- Telas ---------- */
-function itemHTML(d) {
+function itemHTML(d, extra = '') {
   const [lbl, cls] = dueLabel(d);
   return `<div class="item ${cls} ${d.status==='done'?'done':''}" data-id="${d.id}">
     <div class="bar ${d.priority}"></div>
@@ -72,7 +72,7 @@ function itemHTML(d) {
         ${cls==='late' ? '<span class="tag late">Atrasada</span>' : ''}
       </div>
     </div>
-    <div class="due">${lbl}<small>${fmtDate(d.due)}</small></div>
+    <div class="due">${lbl}<small>${fmtDate(d.due)}</small></div>${extra}
   </div>`;
 }
 const byDue = (a, b) => a.due.localeCompare(b.due) || ['alta','media','baixa'].indexOf(a.priority) - ['alta','media','baixa'].indexOf(b.priority);
@@ -284,6 +284,7 @@ document.addEventListener('click', e => {
   if (rm) { filters = { status: '', room: rm.dataset.room, client: '', owner: '', q: '' }; view = 'demandas'; render(); return; }
   const ow = e.target.closest('[data-owner]');
   if (ow) { filters = { status: '', room: '', client: '', owner: ow.dataset.owner, q: '' }; view = 'demandas'; render(); return; }
+  if (e.target.closest('[data-feito]')) return;   // botão "Feita" dentro do card não abre a demanda
   const item = e.target.closest('.item');
   if (item) openDemand(item.dataset.id);
 });

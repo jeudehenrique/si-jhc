@@ -35,19 +35,19 @@ function ensureCal() {
 }
 
 /* ---------- tela ---------- */
-function postItemHTML(p) {
+function postItemHTML(p, extra = '') {
   const t = POST_TYPES[p.type], late = postLate(p), link = safeUrl(p.link);
   return `<div class="pitem ${postReady(p) ? 'ready' : ''} ${late ? 'late' : ''}" data-post="${p.id}" tabindex="0" role="button">
     <div class="pdate"><b>${fmtDate(p.publishDate)}</b><small>${WEEKDAYS[weekdayOf(p.publishDate)]}</small></div>
     <div class="pbody">
       <div class="ptitle">${t.icon} ${esc(p.title)}</div>
       <div class="meta">
-        <span>${t.label}</span>${p.network ? `<span>${esc(p.network)}</span>` : ''}
+        <span><b>${esc(clientName(p.clientId))}</b></span><span>${t.label}</span>${p.network ? `<span>${esc(p.network)}</span>` : ''}
         <span class="tag st-${p.status}">${postStatusName(p.status)}</span>
         <span class="${late ? 'late-txt' : ''}">Entrega ${fmtDate(p.deliveryDate)}${late ? ' · atrasada' : ''}</span>
         ${link ? `<a href="${esc(link)}" target="_blank" rel="noopener noreferrer" class="plink">🔗 Material</a>` : ''}
       </div>
-    </div>
+    </div>${extra}
   </div>`;
 }
 

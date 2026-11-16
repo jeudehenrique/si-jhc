@@ -37,7 +37,7 @@ function pedidoParaAgente(a) {
 }
 
 /* botão "✓ Feita" ao lado de cada pendência: demanda vira Concluída; pauta vira Pronto */
-const feitoLinha = (tipo, id, html) => `<div class="feito-linha">${html}<button class="btn small ghost" data-feito="${tipo}" data-id="${id}">✓ Feita</button></div>`;
+const botaoFeita = (tipo, id) => `<button class="btn small ghost" data-feito="${tipo}" data-id="${id}">✓ Feita</button>`;
 function marcarFeito(tipo, id) {
   if (tipo === 'demanda') {
     const d = state.demands.find(x => x.id === id);
@@ -66,7 +66,7 @@ function renderSala(key) {
     </div>
   </div>
   <div class="section-title">Pendências <b>desta área</b> (${dem.length + posts.length + contas.length})</div>
-  <div class="list">${dem.map(d => feitoLinha('demanda', d.id, itemHTML(d))).join('')}${posts.map(p => feitoLinha('pauta', p.id, postItemHTML(p))).join('')}
+  <div class="list">${dem.map(d => itemHTML(d, botaoFeita('demanda', d.id))).join('')}${posts.map(p => postItemHTML(p, botaoFeita('pauta', p.id))).join('')}
     ${contas.map(c => `<div class="alert ${c.fundsLevel === 'urgente' ? 'late' : 'today'}" data-view="painel" tabindex="0" role="button"><span class="aico">📣</span><div class="abody"><b>${esc(c.company)}: saldo ${c.fundsLevel === 'urgente' ? 'urgente' : 'baixo'} (${money(c.funds || 0)})</b><small>abastecer no Gerenciador da Meta</small></div><span class="asev ${c.fundsLevel === 'urgente' ? 'late' : 'today'}">${c.fundsLevel === 'urgente' ? 'Urgente' : 'Baixo'}</span></div>`).join('')}
     ${dem.length + posts.length + contas.length ? '' : '<div class="card empty">Nenhuma pendência nesta área. 🎉</div>'}</div>`;
 }

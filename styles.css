@@ -435,9 +435,11 @@ dialog{max-height:92vh;overflow:auto}
 .sala-tools code{font-size:12px;word-break:break-all}
 .rgrid.agents{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
 @media (max-width:900px){.sala-top{grid-template-columns:1fr}}
-.feito-linha{display:flex;align-items:center;gap:10px}
-.feito-linha > .item,.feito-linha > .pitem{flex:1;min-width:0}
-.feito-linha > .btn{flex-shrink:0;white-space:nowrap}
+/* botão "✓ Feita" dentro do card (sala do agente) */
+.item:has(> [data-feito]){grid-template-columns:6px 1fr auto auto}
+.pitem:has(> [data-feito]){grid-template-columns:64px 1fr auto}
+.item > [data-feito], .pitem > [data-feito]{white-space:nowrap}
+@media (max-width:760px){.item:has(> [data-feito]){grid-template-columns:6px 1fr auto}.item:has(> [data-feito]) > .due{grid-column:auto}}
 @media (max-width:760px){.navsep,.nav button.agentlink{display:none}}
 
 /* maquete: uma etiqueta clara por personagem */
