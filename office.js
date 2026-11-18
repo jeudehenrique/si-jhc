@@ -228,9 +228,15 @@ const Office = (() => {
   function glassWalls() {   // paredes SÓLIDAS da sala do gerente geral (azul da SI), baixas para o personagem continuar visível
     const wall = (face, c) => { poly(face, shade(c, .7), `stroke="${c}" stroke-width="1.2"`); line(face[3], face[2], '#9cc7ff', 4.5, 'stroke-linecap="round"'); };
     wall(faceX(11, .2, 10, 0, 3.2), '#38BDF8');
-    wall(faceY(0, 7, 10, 0, 3.2), '#38BDF8');
     wall(faceY(9, 11, 10, 0, 3.2), '#38BDF8');
     box(10.85, 9.85, 0, .3, .3, 3.3, '#9cc7ff');
+  }
+  // bandeira da JH Company pendurada na parede da sala das vagas (no lugar do vidro)
+  function bandeira(xc, y, z, w, h) {
+    const [ex, ey] = P(xc, y, z);
+    add(`<g transform="matrix(${f(C * S)} ${f(.5 * S)} 0 ${S} ${ex} ${ey})">
+      <rect x="${f(-w / 2 - .12)}" y="${f(-h / 2 - .12)}" width="${f(w + .24)}" height="${f(h + .24)}" rx=".2" fill="#000000" stroke="#ffffff" stroke-width=".1"/>
+      <image href="icons/bandeira-jh.webp" x="${f(-w / 2)}" y="${f(-h / 2)}" width="${w}" height="${h}" preserveAspectRatio="xMidYMid meet"/></g>`);
   }
   const x0v = 1.6; // início das mesas das vagas
   function vacancies(list) {
@@ -340,7 +346,7 @@ const Office = (() => {
   function html(data) {
     out = [];
     add(`<svg viewBox="0 0 ${VW} ${VH}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Escritório virtual com o status de cada sala">`);
-    defs(); background(); director(data.me.k); glassWalls(); wallSign(5.5, 0, 'GERENTE GERAL', '#38BDF8', false); if (data.vagas.length) vacancies(data.vagas);
+    defs(); background(); director(data.me.k); glassWalls(); bandeira(3.5, 10, 2, 6, 2); wallSign(5.5, 0, 'GERENTE GERAL', '#38BDF8', false); if (data.vagas.length) vacancies(data.vagas);
     data.st.forEach(stationFloor);
     data.st.forEach(station);
     lounge(); bushes();
