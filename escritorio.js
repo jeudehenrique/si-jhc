@@ -14,6 +14,7 @@ const LOOK = {
   video: { skin: '#c68642', hair: '#1a1a1a', color: '#9b6bff' },
   dashboard: { skin: '#e0ac85', hair: '#4a4a4a', color: '#38BDF8' },
   metaads: { skin: '#f6d1b1', hair: '#2b1d12', color: '#2fbf71' },
+  googleads: { skin: '#c68642', hair: '#1a1a1a', color: '#38BDF8' },
   crm: { skin: '#f1c27d', hair: '#3b2a1a', color: '#22b5a7' }
 };
 const tint = (hex, t) => {
@@ -66,12 +67,12 @@ const stateBadge = k => k === 'work' ? '<div class="rstate work"><i></i>TRABALHA
 
 function agentCardHTML(a) {
   const isMgr = a.key === 'gerente';
-  const room = a.rooms[0] || (a.key === 'metaads' ? 'Criação de conteúdo' : undefined);   // Agente 5 fica na sala Meta Ads
+  const room = a.key === 'metaads' ? 'Criação de conteúdo' : a.key === 'googleads' ? 'Gestão de anúncios' : a.rooms[0];   // Agente 5 fica na sala Meta Ads; Agente 6 na sala Google Ads (azul)
   const color = isMgr ? LOOK.gerente.color : ROOM_COLOR[room];
   const news = a.row?.updatedAt ? `Última notícia ${timeAgo(a.row.updatedAt)}` : 'Ainda não se conectou';
   const attrs = isMgr ? 'data-view="alertas"' : `data-view="sala:${a.key}"`;
   return `<div class="rcard agent ${a.k}" ${attrs} tabindex="0" role="button" style="--c:${color}">
-    <div class="rhead"><span class="rnum">AGENTE ${a.num}</span><b>${a.title}</b>${isMgr ? '<small>Sala do diretor · cérebro da SI</small>' : `<small>${a.rooms.length ? `${a.rooms.map(r => ROOM_ICON2[r]).join(' ')} ${a.rooms.length > 1 ? 'Salas' : 'Sala'} ${a.rooms.map(esc).join(' e ')}` : 'Sala Meta Ads'}</small>`}</div>
+    <div class="rhead"><span class="rnum">AGENTE ${a.num}</span><b>${a.title}</b>${isMgr ? '<small>Sala do diretor · cérebro da SI</small>' : `<small>${a.sala ? `Sala ${esc(a.sala)}` : a.rooms.length ? `${a.rooms.map(r => ROOM_ICON2[r]).join(' ')} ${a.rooms.length > 1 ? 'Salas' : 'Sala'} ${a.rooms.map(esc).join(' e ')}` : 'Sala Meta Ads'}</small>`}</div>
     ${deskSVG({ color, k: a.k, look: LOOK[a.key], shelf: isMgr })}
     ${stateBadge(a.k)}
     <div class="rtask">${a.task ? '🛠️ ' + esc(a.task) : a.k === 'work' ? '&nbsp;' : 'Aguardando a próxima tarefa'}</div>
@@ -94,7 +95,7 @@ function emptyRoomHTML(room) {
 
 function sceneHTML(ags) {
   const byKey = Object.fromEntries(ags.map(a => [a.key, a]));
-  const DOLL_ROOM = { 'Design': 'conteudo', 'Edição de vídeo': 'video', 'Gestão de anúncios': 'dashboard', 'Criação de conteúdo': 'metaads', 'Prospecção': 'crm' };   // sala onde fica o boneco de cada agente
+  const DOLL_ROOM = { 'Design': 'conteudo', 'Edição de vídeo': 'video', 'Gestão de anúncios': 'dashboard', 'Criação de conteúdo': 'metaads', 'Atendimento': 'googleads', 'Prospecção': 'crm' };   // sala onde fica o boneco de cada agente
   const lab = a => a.k === 'work' ? 'Trabalhando' : 'Livre';
   const st = ROOMS.map((room, i) => {
     const a = byKey[DOLL_ROOM[room]];

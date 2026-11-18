@@ -7,6 +7,7 @@ const SALA = {
   video: { app: '🎬 Abrir o CapCut' },
   dashboard: { app: '📊 Abrir o painel', url: 'http://localhost:3000' },
   metaads: { app: '🎯 Ainda sem ferramenta ligada', aviso: 'Este agente ainda não tem ferramenta própria. Quando tiver, ela abre por aqui.' },
+  googleads: { app: '🔍 Ainda sem ferramenta ligada', aviso: 'Este agente ainda não tem ferramenta própria. Quando tiver, ela abre por aqui.' },
   crm: { app: '💬 Abrir o CRM', url: 'http://localhost:3333' }
 };
 const LAUNCHER_URL = 'http://127.0.0.1:3777';

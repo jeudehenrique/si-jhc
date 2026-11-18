@@ -8,7 +8,8 @@ const AGENTS = [
   { key: 'video', num: 3, title: 'Editor de vídeo', icon: '🎬', rooms: ['Edição de vídeo'], postTypes: ['reels'], folder: 'CLAUDE EDIÇÃO DE VIDEO' },
   { key: 'dashboard', num: 4, title: 'Gestor dashboard', icon: '📊', rooms: ['Gestão de anúncios'], postTypes: [], folder: 'Painel Meta Ads (C:\\Projetos)' },
   { key: 'metaads', num: 5, title: 'Gestor MetaAds', icon: '🎯', rooms: [], postTypes: [], folder: 'a definir (sala Meta Ads)' },
-  { key: 'crm', num: 7, title: 'Prospecção / CRM', icon: '💬', rooms: ['Prospecção', 'Atendimento'], postTypes: [], folder: 'CRM BOOT JHC (JH Company)' }
+  { key: 'googleads', num: 6, title: 'Gestor Google Ads', icon: '🔍', sala: 'Google Ads', rooms: ['Atendimento'], postTypes: [], folder: 'a definir (sala Google Ads)' },
+  { key: 'crm', num: 7, title: 'Prospecção / CRM', icon: '💬', rooms: ['Prospecção'], postTypes: [], folder: 'CRM BOOT JHC (JH Company)' }
 ];
 // "trabalhando" só vale se o agente deu notícia nas últimas horas (se esquecer de avisar que acabou, volta a "livre")
 const AGENT_FRESH_HOURS = 4;
