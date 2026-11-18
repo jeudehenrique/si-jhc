@@ -188,7 +188,7 @@ function linksHTML(crmAt) {
   return `<div class="flinks">${items.map(([n, d]) => `<span class="flink ${h(d) <= 24 ? 'ok' : ''}" title="${d ? 'última novidade ' + timeAgo(d) : 'ainda sem novidades'}"><i></i>${n}</span>`).join('')}</div>`;
 }
 
-/* Resumo do CRM (Agente 5) no mesmo desenho do dashboard dele: Empresas, Metas de prospecção e totais.
+/* Resumo do CRM (Agente 7) no mesmo desenho do dashboard dele: Empresas, Metas de prospecção e totais.
    Os números vêm da tabela metricas_crm (chave prospeccao), atualizada a cada minuto como o resto do painel.
    Campos opcionais que o CRM pode acrescentar depois (aparecem sozinhos quando existirem):
    total_empresas, em_negociacao, clientes_fechados, followups_hoje, followups_atrasados. */
