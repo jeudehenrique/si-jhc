@@ -226,9 +226,10 @@ const Office = (() => {
     add(`<circle cx="${lx}" cy="${ly}" r="15" fill="#000" stroke="#38BDF8" stroke-width="2"/><text x="${lx}" y="${f(ly + 1)}" text-anchor="middle" dominant-baseline="central" font-size="15">🚀</text>`);
   }
   function glassWalls() {   // paredes SÓLIDAS da sala do gerente geral (azul da SI), baixas para o personagem continuar visível
-    const wall = (face, c) => { poly(face, shade(c, .7), `stroke="${c}" stroke-width="1.2"`); line(face[3], face[2], '#9cc7ff', 4.5, 'stroke-linecap="round"'); };
-    wall(faceX(11, .2, 10, 0, 3.2), '#38BDF8');
-    wall(faceY(9, 11, 10, 0, 3.2), '#38BDF8');
+    // paredes 3D de verdade (com espessura e topo), não mais faixas chapadas
+    box(10.85, .2, 0, .3, 9.8, 3.2, '#38BDF8');       // lateral direita da sala do gerente
+    box(0, 9.85, 0, 7, .3, 3.2, '#38BDF8');           // parede da frente (onde fica a bandeira)
+    box(9, 9.85, 0, 2, .3, 3.2, '#38BDF8');           // trecho de parede até a quina
     box(10.85, 9.85, 0, .3, .3, 3.3, '#9cc7ff');
   }
   // bandeira da JH Company pendurada na parede da sala das vagas (no lugar do vidro)
@@ -289,14 +290,15 @@ const Office = (() => {
     const [x0, y0] = stationOrigin(s.i);
     const azul = s.i >= 4 && s.i <= 6;   // gestão analítica, meta ads e google ads: uma sala azul só
     const acc = azul ? ACCENT['Gestão de anúncios'] : ACCENT[s.room];
-    if (s.i % 4 > 0 && !azul) glassWall(faceX(x0, y0, y0 + 9, 0, 2.6), acc);   // sem divisória dentro da sala azul
-    if (s.i === 4) glassWall(faceY(x0, x0 + 24, y0, 0, 6.1), acc);   // parede do fundo, corrida pelas três salas azuis
-    if (s.i === 7) {   // sala amarela ganha parede do fundo (para o nome) e muro no final
-      glassWall(faceY(x0, x0 + 8, y0, 0, 6.1), acc);
-      glassWall(faceX(x0 + 8, y0, y0 + 9, 0, 2.6), acc);
+    const PAREDE = '#dfe7f2';   // cor das divisórias e paredes do fundo
+    if (s.i % 4 > 0) box(x0 - .15, y0, 0, .3, 9, 2.6, PAREDE);   // divisória 3D entre as salas (inclusive entre as azuis)
+    if (s.i === 4) box(x0, y0 - .15, 0, 24, .3, 6.1, PAREDE);   // parede do fundo, corrida pelas três salas azuis
+    if (s.i === 7) {   // sala amarela: parede do fundo (para o nome) e muro no final
+      box(x0, y0 - .15, 0, 8, .3, 6.1, PAREDE);
+      box(x0 + 8 - .15, y0, 0, .3, 9, 2.6, PAREDE);
     }
 
-    wallSign(x0 + 4, s.i >= 4 ? y0 : 0, NOMES[s.room], acc, !s.hasAgent);
+    wallSign(x0 + 4, s.i >= 4 ? y0 + .2 : 0, NOMES[s.room], acc, !s.hasAgent);
     desk(x0 + 1, y0 + 1.2, 6, 2.6);
     monitor(x0 + 2.7, y0 + 1.7, 2.42, 2.6, s.k);
     box(x0 + 3.1, y0 + 2.75, 2.42, 1.8, .6, .06, '#e3e5ea');
@@ -346,7 +348,7 @@ const Office = (() => {
   function html(data) {
     out = [];
     add(`<svg viewBox="0 0 ${VW} ${VH}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Escritório virtual com o status de cada sala">`);
-    defs(); background(); director(data.me.k); glassWalls(); bandeira(3.5, 10, 2, 6, 2); wallSign(5.5, 0, 'GERENTE GERAL', '#38BDF8', false); if (data.vagas.length) vacancies(data.vagas);
+    defs(); background(); director(data.me.k); glassWalls(); bandeira(3.5, 10.2, 2, 6, 2); wallSign(5.5, 0, 'GERENTE GERAL', '#38BDF8', false); if (data.vagas.length) vacancies(data.vagas);
     data.st.forEach(stationFloor);
     data.st.forEach(station);
     lounge(); bushes();
