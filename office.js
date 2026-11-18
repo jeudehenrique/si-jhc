@@ -22,8 +22,8 @@ const Office = (() => {
     { skin: '#8d5524', hair: '#1a1a1a', style: 2 },
     { skin: '#e0ac85', hair: '#2b1d14', style: 0 },
     { skin: '#f6d1b1', hair: '#a33b2b', style: 1 },
-    { skin: '#c68642', hair: '#3b2a1a', style: 3 },
-    { skin: '#e0ac85', hair: '#5a5a5a', style: 2 }
+    { skin: '#e0ac85', hair: '#5a5a5a', style: 2 },
+    { skin: '#c68642', hair: '#3b2a1a', style: 3 }
   ];
   const ME = { skin: '#e0ac85', hair: '#1a1a1a', style: 0 };
   const NOMES = { 'Design': 'DESIGN GRÁFICO', 'Edição de vídeo': 'EDIÇÃO DE VÍDEO', 'Gestão de anúncios': 'GESTÃO ANALÍTICA', 'Criação de conteúdo': 'META ADS', 'Programação/Sites': 'SITES', 'SEO': 'SEO', 'Prospecção': 'PROSPECÇÃO', 'Atendimento': 'ATENDIMENTO' };

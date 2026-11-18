@@ -1,6 +1,6 @@
 /* SI · Superinteligência JHC — Caixa de demandas, Painel e Escritório (calendar.js, metas.js, clientes.js e office.js completam) */
 
-const ROOMS = ['Design','Edição de vídeo','Programação/Sites','SEO','Gestão de anúncios','Criação de conteúdo','Prospecção','Atendimento'];
+const ROOMS = ['Design','Edição de vídeo','Programação/Sites','SEO','Gestão de anúncios','Criação de conteúdo','Atendimento','Prospecção'];
 const STATUSES = [['todo','A fazer'],['doing','Em andamento'],['approval','Aguardando aprovação'],['done','Concluída']];
 const PRIORITIES = {alta:'Alta', media:'Média', baixa:'Baixa'};
 const OWNERS = ['Eu','Gestão (a contratar)','Criação com IA (a contratar)'];
