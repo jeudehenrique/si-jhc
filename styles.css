@@ -152,8 +152,8 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 /* animações dos agentes */
 .ag .head,.ag .a1,.ag .a2,.qb,.bb,.z,.steam{transform-box:fill-box;transform-origin:50% 100%}
 .ag.work .head{animation:ofBob .8s ease-in-out infinite alternate}
-.ag.work .a1{animation:ofType .32s steps(2) infinite}
-.ag.work .a2{animation:ofType .32s steps(2) infinite reverse}
+.ag.work .a1{animation:ofType 1.1s ease-in-out infinite}
+.ag.work .a2{animation:ofType 1.1s ease-in-out infinite reverse}
 .ag.stop .head{transform:translateY(5px)}
 .ag.free .head{transform:rotate(-8deg)}
 .blink{animation:ofBlink 1s steps(2) infinite}
@@ -164,7 +164,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 .z2{font-size:11px;animation-delay:.8s}.z3{font-size:13px;animation-delay:1.6s}
 .steam{animation:ofSteam 1.6s ease-in-out infinite}
 @keyframes ofBob{to{transform:translateY(-2px)}}
-@keyframes ofType{50%{transform:translateY(-3px)}}
+@keyframes ofType{50%{transform:translateY(-2px)}}
 @keyframes ofShake{25%{transform:translateX(-1.5px)}75%{transform:translateX(1.5px)}}
 @keyframes ofPulse{50%{opacity:.06}}
 @keyframes ofBlink{50%{opacity:.4}}
