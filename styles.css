@@ -166,7 +166,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 .z2{font-size:11px;animation-delay:.8s}.z3{font-size:13px;animation-delay:1.6s}
 .steam{animation:ofSteam 1.6s ease-in-out infinite}
 @keyframes ofBob{to{transform:translateY(-2px)}}
-@keyframes ofType{50%{transform:translateY(-1.5px)}}
+@keyframes ofType{50%{transform:translateY(-3px)}}
 @keyframes ofShake{25%{transform:translateX(-1.5px)}75%{transform:translateX(1.5px)}}
 @keyframes ofPulse{50%{opacity:.06}}
 @keyframes ofBlink{50%{opacity:.4}}
@@ -177,6 +177,14 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 .legend .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
 .dot.work{background:#22C55E}.dot.appr{background:var(--gold)}.dot.stop{background:#8b95a7}.dot.late{background:var(--alert)}.dot.free{background:var(--accent)}
 .sm-only{display:none}
+/* bonecos com movimento próprio: quem trabalha olha para a tela e digita; quem está livre respira e se vira */
+.ag .head{transform-box:fill-box;transform-origin:50% 100%}
+.ag.work .head{animation:ofOlha 4.5s ease-in-out infinite}
+.ag.free{transform-box:fill-box;transform-origin:50% 100%;animation:ofRespira 3.4s ease-in-out infinite}
+.ag.free .head{animation:ofSoneca 5s ease-in-out infinite}
+@keyframes ofOlha{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+@keyframes ofSoneca{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(4deg) translateY(-1px)}}
+@keyframes ofRespira{50%{transform:scaleY(1.015)}}
 @media (prefers-reduced-motion:reduce){.office-wrap *{animation:none!important}.z{opacity:1}}
 @media (max-width:760px){
   .hud{grid-template-columns:repeat(3,1fr)}
