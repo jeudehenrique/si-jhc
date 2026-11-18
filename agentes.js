@@ -7,8 +7,8 @@ const AGENTS = [
   { key: 'conteudo', num: 2, title: 'Design gráfico', icon: '🖼️', rooms: ['Criação de conteúdo', 'Design'], postTypes: ['carrossel', 'post'], folder: 'Criador de iamgesn' },
   { key: 'video', num: 3, title: 'Editor de vídeo', icon: '🎬', rooms: ['Edição de vídeo'], postTypes: ['reels'], folder: 'CLAUDE EDIÇÃO DE VIDEO' },
   { key: 'dashboard', num: 4, title: 'Gestor dashboard', icon: '📊', rooms: ['Gestão de anúncios'], postTypes: [], folder: 'Painel Meta Ads (C:\\Projetos)' },
-  { key: 'metaads', num: 5, title: 'Gestor MetaAds', icon: '🎯', rooms: [], postTypes: [], folder: 'a definir (sala Meta Ads)' },
-  { key: 'crm', num: 6, title: 'Prospecção / CRM', icon: '💬', rooms: ['Prospecção', 'Atendimento'], postTypes: [], folder: 'CRM BOOT JHC (JH Company)' }
+  { key: 'crm', num: 5, title: 'Prospecção / CRM', icon: '💬', rooms: ['Prospecção', 'Atendimento'], postTypes: [], folder: 'CRM BOOT JHC (JH Company)' },
+  { key: 'metaads', num: 6, title: 'Gestor MetaAds', icon: '🎯', rooms: [], postTypes: [], folder: 'a definir (sala Meta Ads)' }
 ];
 // "trabalhando" só vale se o agente deu notícia nas últimas horas (se esquecer de avisar que acabou, volta a "livre")
 const AGENT_FRESH_HOURS = 4;
