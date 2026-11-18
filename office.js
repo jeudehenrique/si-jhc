@@ -93,7 +93,7 @@ const Office = (() => {
   function screen(k, x1, x2, y, z1, z2) {
     const face = faceY(x1, x2, y, z1, z2);
     const fill = { work: '#0f2a3a', appr: '#F3B44F', stop: '#1a2233', late: '#FF8A80', free: '#0c0f14', chart: '#0f2a3a' }[k];
-    poly(face, fill, k === 'late' ? 'class="blink"' : '');
+    poly(face, fill, '');
     if (k === 'work') [['#22C55E', .55], ['#7fd4ff', .85], ['#ffffff', .4]].forEach(([c, len], i) => {
       const z = z2 - .35 - i * .35;
       line(P(x1 + .2, y, z), P(x1 + .2 + (x2 - x1 - .4) * len, y, z), c, 1.4, `stroke-linecap="round" class="code" style="animation-delay:${i * .4}s"`);
@@ -131,7 +131,7 @@ const Office = (() => {
             <ellipse cx="${f(bx + 9)}" cy="${f(by - 27)}" rx="3.2" ry="8" transform="rotate(-28 ${f(bx + 9)} ${f(by - 27)})" fill="${sd}"/>`;
     } else if (k === 'free') {
       g += `<ellipse cx="${f(bx - 9)}" cy="${f(by - 14)}" rx="3.4" ry="7" fill="${sd}"/>
-            <ellipse cx="${f(bx + 10)}" cy="${f(by - 19)}" rx="3.4" ry="7" transform="rotate(-35 ${f(bx + 10)} ${f(by - 19)})" fill="${sd}"/>`;
+            <g class="cafe"><ellipse cx="${f(bx + 10)}" cy="${f(by - 19)}" rx="3.4" ry="7" transform="rotate(-35 ${f(bx + 10)} ${f(by - 19)})" fill="${sd}"/></g>`;
     } else {
       g += `<ellipse class="a1" cx="${f(bx - 9)}" cy="${f(by - 14)}" rx="3.4" ry="7" fill="${sd}"/>
             <ellipse class="a2" cx="${f(bx + 9)}" cy="${f(by - 14)}" rx="3.4" ry="7" fill="${sd}"/>`;
@@ -297,7 +297,7 @@ const Office = (() => {
     cyl(x0 + 6.1, y0 + 2.5, 2.42, .2, .35, '#ffffff');
     if (s.hasAgent) agent(x0 + 4, y0 + 5.2, 1.6, LOOKS[s.i], s.k, acc);
     else emptyChair(x0 + 4, y0 + 5.2, 1.6, false);   // sala sem agente ainda: só a cadeira vazia
-    badge(x0 + 7.2, y0 + 1.1, 4.4, ICON[s.room]);  }
+  }
   function lounge() {
     poly(quadPts(13, 21.6, .02, 16, 7.6), '#f3e8d5', 'stroke="#e2d3b8"');
     box(14.5, 22, 0, 8, .8, 2.3, '#3b4150');

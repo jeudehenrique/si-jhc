@@ -143,7 +143,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 .pill{transform:translate(-50%,-100%);display:flex;align-items:center;gap:.5cqw;font:700 .9cqw Inter,system-ui,sans-serif;letter-spacing:.03em;color:#1d2433;background:#fff;padding:.4cqw .8cqw;border-radius:99px;box-shadow:0 .3cqw 1cqw rgba(16,24,40,.18)}
 .pill::before{content:"";width:.8cqw;height:.8cqw;border-radius:50%;background:currentColor}
 .pill.work::before{background:#22C55E}.pill.appr::before{background:#F3B44F}.pill.stop::before{background:#8b95a7}.pill.free::before{background:#38BDF8}
-.pill.late{background:#FF8A80;color:#fff;animation:ofBlink 1.2s steps(2) infinite}
+.pill.late{background:#FF8A80;color:#fff}
 .pill.vaga{background:#fff8dc;color:#8a6a00;border:1px dashed #F3B44F}.pill.vaga::before{background:#F3B44F}
 .ztag{transform:translate(-50%,0);text-align:center;background:rgba(11,15,26,.8);border-radius:.6cqw;padding:.35cqw .9cqw}
 .ztag b{display:block;font:700 .82cqw Inter,system-ui,sans-serif;letter-spacing:.04em;color:#fff}
@@ -156,8 +156,6 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 .ag.work .a2{animation:ofType .32s steps(2) infinite reverse}
 .ag.stop .head{transform:translateY(5px)}
 .ag.free .head{transform:rotate(-8deg)}
-.ag.late{animation:ofShake .4s linear infinite}
-.ring.late{animation:ofPulse 1s ease-in-out infinite}
 .blink{animation:ofBlink 1s steps(2) infinite}
 .qb{animation:ofBob 1s ease-in-out infinite alternate}
 .bb{animation:ofFloat 3s ease-in-out infinite alternate}
@@ -182,6 +180,8 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 .ag.work .head{animation:ofOlha 4.5s ease-in-out infinite}
 .ag.free{transform-box:fill-box;transform-origin:50% 100%;animation:ofRespira 3.4s ease-in-out infinite}
 .ag.free .head{animation:ofSoneca 5s ease-in-out infinite}
+.ag.free .cafe{transform-box:fill-box;transform-origin:50% 0%;animation:ofCafe 7s ease-in-out infinite}
+@keyframes ofCafe{0%,55%,100%{transform:rotate(0)}65%,75%{transform:rotate(-28deg)}85%{transform:rotate(0)}}
 @keyframes ofOlha{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
 @keyframes ofSoneca{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(4deg) translateY(-1px)}}
 @keyframes ofRespira{50%{transform:scaleY(1.015)}}
@@ -381,7 +381,7 @@ dialog{max-height:92vh;overflow:auto}
 .hud.h3{grid-template-columns:repeat(3,1fr)}
 .pill.work::before,.pill.free::before{}
 .notif{position:absolute;transform:translate(-50%,-100%);pointer-events:none;white-space:nowrap;font:700 .95cqw Inter,system-ui,sans-serif;background:var(--gold);color:#1d2433;padding:.4cqw .8cqw;border-radius:99px;box-shadow:0 .3cqw 1cqw rgba(16,24,40,.25);border:.15cqw solid #fff}
-.notif.late{background:#FF8A80;color:#fff;animation:ofBlink 1.2s steps(2) infinite}
+.notif.late{background:#FF8A80;color:#fff}
 .count{text-align:center;border-radius:.8cqw!important;padding:.3cqw .9cqw!important}
 .count b{display:block;font:700 .8cqw Inter,system-ui,sans-serif;letter-spacing:.04em}
 .count span{display:block}
