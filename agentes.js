@@ -11,6 +11,8 @@ const AGENTS = [
   { key: 'googleads', num: 6, title: 'Gestor Google Ads', icon: '🔍', sala: 'Google Ads', rooms: ['Atendimento'], postTypes: [], folder: 'a definir (sala Google Ads)' },
   { key: 'crm', num: 7, title: 'Prospecção / CRM', icon: '💬', rooms: ['Prospecção'], postTypes: [], folder: 'CRM BOOT JHC (JH Company)' }
 ];
+// quem está com a ferramenta aberta AGORA neste computador (vem do ajudante local; null = ajudante desligado). Atualiza a cada ~2 s.
+let presencaLocal = null;
 // "trabalhando" só vale se o agente deu notícia nas últimas horas (se esquecer de avisar que acabou, volta a "livre")
 const AGENT_FRESH_HOURS = 4;
 const AGENT_LABEL = { work: 'Trabalhando', free: 'Livre' };
@@ -19,6 +21,9 @@ function agentInfo(a) {
   const row = state.agents.find(x => x.key === a.key);
   const fresh = !!(row && row.updatedAt && Date.now() - new Date(row.updatedAt) < AGENT_FRESH_HOURS * 3600e3);
   let working = fresh && (row.status === 'trabalhando' || row.status === 'aguardando');
+  // com o ajudante local ligado, a janela aberta manda: abriu a ferramenta, já aparece trabalhando; fechou, volta a livre
+  let localTask = '';
+  if (presencaLocal && presencaLocal.monitorados.includes(a.key)) { localTask = presencaLocal.abertos[a.key] || ''; working = !!localTask; }
   // Agente 6: se o CRM enviou números há poucos minutos, você está prospectando/no CRM agora: fica como "trabalhando"
   let crmTask = '';
   if (a.key === 'crm') {
@@ -40,7 +45,7 @@ function agentInfo(a) {
       accts = bad.length; pend += accts; late += state.ads.filter(x => x.fundsLevel === 'urgente').length;
     }
   }
-  return { ...a, row, fresh, dem, posts, accts, pend, late, k: working ? 'work' : 'free', task: working && row?.task ? row.task : crmTask };
+  return { ...a, row, fresh, dem, posts, accts, pend, late, k: working ? 'work' : 'free', task: localTask || (working && row?.task ? row.task : crmTask) };
 }
 function timeAgo(isoStr) {
   if (!isoStr) return '';

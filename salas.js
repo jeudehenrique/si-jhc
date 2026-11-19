@@ -18,6 +18,29 @@ async function chamarAjudante(alvo, acao) {
     return (await r.json()).ok === true;
   } catch { return false; }
 }
+/* Presença em tempo real: pergunta ao ajudante local (neste computador) quem está com a ferramenta aberta, a cada 2 s.
+   Se o ajudante estiver desligado, a SI usa só o status do banco (mais lento) e tenta de novo a cada 15 s. */
+async function lerPresenca() {
+  try {
+    const r = await fetch(`${LAUNCHER_URL}/presenca`, { headers: { 'X-SI': '1' }, signal: AbortSignal.timeout(1500) });
+    const j = await r.json();
+    if (!j.ok) throw new Error('sem presença');
+    const novo = { monitorados: j.monitorados || [], abertos: j.abertos || {} };
+    if (JSON.stringify(novo) !== JSON.stringify(presencaLocal)) { presencaLocal = novo; redesenharPresenca(); }
+    return true;
+  } catch {
+    if (presencaLocal) { presencaLocal = null; redesenharPresenca(); }
+    return false;
+  }
+}
+function redesenharPresenca() {
+  if (typeof render !== 'function' || typeof $ !== 'function') return;   // a tela ainda está carregando
+  if (document.hidden || $('#app').classList.contains('hidden')) return;
+  if (document.querySelector('dialog[open]') || document.activeElement?.matches('input, textarea, select')) return;
+  render();
+}
+(async function cicloPresenca() { const ok = await lerPresenca(); setTimeout(cicloPresenca, ok ? 2000 : 15000); })();
+
 async function copiar(texto) { try { await navigator.clipboard.writeText(texto); return true; } catch { return false; } }
 
 function salaItens(a) {
