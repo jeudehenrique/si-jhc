@@ -175,9 +175,9 @@ const Office = (() => {
     poly([P(-9, -9, -1.1), P(W + 9, -9, -1.1), P(W + 9, D + 9, -1.1), P(-9, D + 9, -1.1)], '#111821');
     for (let x = 3; x <= 45; x += 6) tree(x, -4, 7.6 + (x % 4) * .3);
     for (let y = 4; y <= 28; y += 6) tree(-4, y, 7.6 + (y % 4) * .3);
-    // piso de madeira
-    box(0, 0, -1, W, D, 1, '#dbb98a');
-    for (let y = 1.4; y < D; y += 1.4) line(P(0, y, 0), P(W, y, 0), '#c9a373', .7);
+    // piso: carpete cinza-escuro (combina com o azul da marca)
+    box(0, 0, -1, W, D, 1, '#252c39');
+    for (let y = 1.4; y < D; y += 1.4) line(P(0, y, 0), P(W, y, 0), '#1d2330', .7);
     // paredes do fundo com janelões
     box(-.6, -.6, -1, .6, D + .6, 8, '#1f3260');
     box(0, -.6, -1, W, .6, 8, '#1f3260');
@@ -200,9 +200,9 @@ const Office = (() => {
     }
   }
   function director(k) {
-    poly(quadPts(.2, .2, .02, 10.8, 9.8), '#e3e6eb');
-    for (let i = 1.6; i < 10.8; i += 1.6) line(P(i, .2, .02), P(i, 10, .02), '#d3d7de', .6);
-    for (let j = 1.6; j < 10; j += 1.6) line(P(.2, j, .02), P(11, j, .02), '#d3d7de', .6);
+    poly(quadPts(.2, .2, .02, 10.8, 9.8), '#2f3748');
+    for (let i = 1.6; i < 10.8; i += 1.6) line(P(i, .2, .02), P(i, 10, .02), '#262d3b', .6);
+    for (let j = 1.6; j < 10; j += 1.6) line(P(.2, j, .02), P(11, j, .02), '#262d3b', .6);
     poly(quadPts(2.4, 4.6, .03, 6.6, 4.6), '#38BDF8', 'opacity=".16" stroke="#38BDF8" stroke-opacity=".4"');
     // estante com livros
     box(0, .8, 0, .9, 4.6, 5.2, '#b7794a');
@@ -227,10 +227,11 @@ const Office = (() => {
   }
   function glassWalls() {   // paredes SÓLIDAS da sala do gerente geral (azul da SI), baixas para o personagem continuar visível
     // paredes 3D de verdade (com espessura e topo), não mais faixas chapadas
-    box(10.85, .2, 0, .3, 9.8, 3.2, '#38BDF8');       // lateral direita da sala do gerente
-    box(0, 9.85, 0, 7, .3, 3.2, '#38BDF8');           // parede da frente (onde fica a bandeira)
-    box(9, 9.85, 0, 2, .3, 3.2, '#38BDF8');           // trecho de parede até a quina
-    box(10.85, 9.85, 0, .3, .3, 3.3, '#9cc7ff');
+    const AZUL = '#0284C7';   // azul principal da marca (botão e barras do sistema)
+    box(10.85, .2, 0, .3, 9.8, 3.2, AZUL);       // lateral direita da sala do gerente
+    box(0, 9.85, 0, 7, .3, 3.2, AZUL);           // parede da frente (onde fica a bandeira)
+    box(9, 9.85, 0, 2, .3, 3.2, AZUL);           // trecho de parede até a quina
+    box(10.85, 9.85, 0, .3, .3, 3.3, '#38BDF8'); // quina em azul claro
   }
   // bandeira da JH Company pendurada na parede da sala das vagas (no lugar do vidro)
   function bandeira(xc, y, z, w, h) {
@@ -260,9 +261,9 @@ const Office = (() => {
   function stationFloor(s) {
     if (s.i === 5 || s.i === 6) return;   // conteúdo e Google Ads são a mesma sala azul da gestão analítica: um piso só
     const [x0, y0] = stationOrigin(s.i), acc = ACCENT[s.room], W2 = s.i === 4 ? 24 : 8;
-    poly(quadPts(x0, y0, .03, W2, 9), mix(acc, .6));
-    for (let i = 1; i < W2; i++) line(P(x0 + i, y0, .04), P(x0 + i, y0 + 9, .04), '#ffffff', .6, 'opacity=".35"');
-    for (let j = 1; j < 9; j++) line(P(x0, y0 + j, .04), P(x0 + W2, y0 + j, .04), '#ffffff', .6, 'opacity=".35"');
+    poly(quadPts(x0, y0, .03, W2, 9), '#2b3342');   // carpete cinza-escuro, o mesmo tom das telas do sistema
+    for (let i = 1; i < W2; i++) line(P(x0 + i, y0, .04), P(x0 + i, y0 + 9, .04), '#000000', .6, 'opacity=".25"');
+    for (let j = 1; j < 9; j++) line(P(x0, y0 + j, .04), P(x0 + W2, y0 + j, .04), '#000000', .6, 'opacity=".25"');
     poly(quadPts(x0, y0, .05, W2, 9), 'none', `stroke="${acc}" stroke-width="3" stroke-linejoin="round"`);
   }
   // divisória SÓLIDA na cor do setor, com trilho claro em cima
@@ -290,7 +291,7 @@ const Office = (() => {
     const [x0, y0] = stationOrigin(s.i);
     const azul = s.i >= 4 && s.i <= 6;   // gestão analítica, meta ads e google ads: uma sala azul só
     const acc = azul ? ACCENT['Gestão de anúncios'] : ACCENT[s.room];
-    const PAREDE = '#dfe7f2';   // cor das divisórias e paredes do fundo
+    const PAREDE = '#0284C7';   // paredes azuis, mesmo padrão de cor do sistema
     if (s.i % 4 > 0) box(x0 - .15, y0, 0, .3, 9, 2.6, PAREDE);   // divisória 3D entre as salas (inclusive entre as azuis)
     if (s.i === 4) box(x0, y0 - .15, 0, 24, .3, 6.1, PAREDE);   // parede do fundo, corrida pelas três salas azuis
     if (s.i === 7) {   // sala amarela: parede do fundo (para o nome) e muro no final
@@ -307,7 +308,7 @@ const Office = (() => {
     else emptyChair(x0 + 4, y0 + 5.2, 1.6, false);   // sala sem agente ainda: só a cadeira vazia
   }
   function lounge() {
-    poly(quadPts(13, 21.6, .02, 16, 7.6), '#f3e8d5', 'stroke="#e2d3b8"');
+    poly(quadPts(13, 21.6, .02, 16, 7.6), '#34405a', 'stroke="#475572"');
     box(14.5, 22, 0, 8, .8, 2.3, '#3b4150');
     box(14.5, 22.8, 0, 8, 1.8, 1.1, '#4a5163');
     box(14.5, 22, 0, .7, 2.6, 1.6, '#3b4150');
