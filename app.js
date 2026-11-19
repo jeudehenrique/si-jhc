@@ -388,6 +388,17 @@ window.addEventListener('focus', virouODia);
 document.addEventListener('visibilitychange', () => { if (!document.hidden) virouODia(); });
 setInterval(refreshData, 60000);
 window.addEventListener('focus', refreshData);
+/* status dos agentes (trabalhando/livre) com leitura leve a cada 10 s: o personagem muda poucos segundos depois de você abrir a ferramenta */
+async function refreshAgentes() {
+  if (!DB.online || document.hidden || $('#app').classList.contains('hidden')) return;
+  if (document.querySelector('dialog[open]') || document.activeElement?.matches('input, textarea, select')) return;
+  try {
+    await DB.idle();
+    const rows = await DB.loadAgents();
+    if (rows && JSON.stringify(rows) !== JSON.stringify(state.agents)) { state.agents = rows; render(); }
+  } catch (err) { console.warn('Atualização do status dos agentes falhou:', err); }
+}
+setInterval(refreshAgentes, 10000);
 
 applyTheme();
 showApp();

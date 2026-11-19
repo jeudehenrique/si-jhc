@@ -173,6 +173,16 @@ const DB = (() => {
       snap = snapshot(s);
       return s;
     },
+    // leitura leve só do status dos agentes (para a SI mostrar "trabalhando" em poucos segundos, sem recarregar tudo)
+    async loadAgents() {
+      if (!online || !ok.agents) return null;
+      const t = TABLES.find(x => x.key === 'agents');
+      const r = await sb.from(t.table).select('*');
+      if (r.error) return null;
+      const rows = r.data.map(t.from);
+      if (snap) snap.agents = new Map(rows.map(x => [x.id, JSON.stringify(t.to(x))]));   // evita regravar o que acabou de ser lido
+      return rows;
+    },
     save(state, onError) {
       if (!online) {
         localStorage.setItem(LOCAL, JSON.stringify(Object.fromEntries(TABLES.map(t => [t.key, state[t.key] || []]))));
