@@ -282,10 +282,10 @@ const Office = (() => {
   // placa com o nome da sala pintada na parede dos fundos (plano y = const)
   function wallSign(xc, y, nome, cor, apagada) {
     const [ex, ey] = P(xc, y, 5.3), w = 7, h = 1.5, ta = f(Math.min(1, 6.5 / (nome.length * .62 * .85)));
-    add(`<g transform="matrix(${f(C * S)} ${f(.5 * S)} 0 ${S} ${ex} ${ey})" opacity="${apagada ? .75 : 1}">
-      <rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx=".25" fill="${cor}" stroke="#ffffff" stroke-width=".12"/>
-      <text text-anchor="middle" dominant-baseline="central" font-family="Montserrat,Inter,sans-serif" font-weight="900" font-size=".85" textLength="${f(Math.min(6.5, nome.length * .62 * .85))}" lengthAdjust="spacingAndGlyphs" fill="#ffffff" stroke="${shade(cor, .5)}" stroke-width=".08" paint-order="stroke">${nome}</text></g>`);
-    void ta;
+    add(`<g transform="matrix(${f(C * S)} ${f(.5 * S)} 0 ${S} ${ex} ${ey})" opacity="1">
+      <rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx=".25" fill="#000000" stroke="#3a4250" stroke-width=".12"/>
+      <text text-anchor="middle" dominant-baseline="central" font-family="Montserrat,Inter,sans-serif" font-weight="900" font-size=".85" textLength="${f(Math.min(6.5, nome.length * .62 * .85))}" lengthAdjust="spacingAndGlyphs" fill="#ffffff" stroke="#000000" stroke-width=".08" paint-order="stroke">${nome}</text></g>`);
+    void ta; void cor; void apagada;
   }
   function station(s) {
     const [x0, y0] = stationOrigin(s.i);
