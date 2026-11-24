@@ -229,7 +229,8 @@ const Office = (() => {
     // paredes 3D de verdade (com espessura e topo), não mais faixas chapadas
     const AZUL = '#0284C7';   // azul principal da marca (botão e barras do sistema)
     box(10.85, .2, 0, .3, 9.8, 3.2, AZUL);       // lateral direita da sala do gerente
-    box(0, 9.85, 0, 7, .3, 3.2, AZUL);           // parede da frente (onde fica a bandeira)
+    box(0, 9.85, 0, 7, .3, 6.1, AZUL);           // parede da frente (bandeira embaixo, placa REMARKETING em cima)
+    wallSign(3.5, 10.2, 'REMARKETING', '#0284C7', false);
     box(9, 9.85, 0, 2, .3, 3.2, AZUL);           // trecho de parede até a quina
     box(10.85, 9.85, 0, .3, .3, 3.3, '#38BDF8'); // quina em azul claro
   }
@@ -248,7 +249,9 @@ const Office = (() => {
       desk(x0 + 1, y0 + 1.2, 6, 2.6);
       monitor(x0 + 2.7, y0 + 1.7, 2.42, 2.6, 'free');
       for (let j = 0; j < Math.min(v.total, 6); j++) box(x0 + 5.3, y0 + 2.3, 2.42 + j * .14, 1.2, .9, .12, j % 2 ? '#e9ecf2' : '#ffffff');
-      emptyChair(x0 + 4, y0 + 5.2, 1.6);
+      // a primeira mesa ganha um bonequinho (livre); a segunda continua vaga
+      if (n === 0) agent(x0 + 4, y0 + 5.2, 1.6, LOOKS[0], 'free', '#0284C7');
+      else emptyChair(x0 + 4, y0 + 5.2, 1.6);
     });
     plant(10.2, 26.4, 1.1, '#c97a4a');
   }
@@ -281,13 +284,12 @@ const Office = (() => {
   }
   // placa com o nome da sala pintada na parede dos fundos (plano y = const)
   function wallSign(xc, y, nome, cor, apagada) {
-    // placa fina e elegante: preta, borda interna clara bem sutil, letras brancas leves com bastante espaço entre elas
-    const [ex, ey] = P(xc, y, 5.3), h = 1.05, texto = f(nome.length * .56), w = f(Math.min(7, Math.max(3.4, texto + 1.4)));
+    // placa colorida na cor da sala, com o nome branco dentro; a largura acompanha o tamanho do nome
+    const [ex, ey] = P(xc, y, 5.3), h = 1.5, w = f(Math.min(7.5, nome.length * .44 + 1.4));
     add(`<g transform="matrix(${f(C * S)} ${f(.5 * S)} 0 ${S} ${ex} ${ey})">
-      <rect x="${f(-w / 2)}" y="${f(-h / 2)}" width="${w}" height="${h}" rx=".18" fill="#05070a" stroke="#2a313d" stroke-width=".1"/>
-      <rect x="${f(-w / 2 + .1)}" y="${f(-h / 2 + .1)}" width="${f(w - .2)}" height="${f(h - .2)}" rx=".12" fill="none" stroke="#ffffff" stroke-opacity=".22" stroke-width=".04"/>
-      <text text-anchor="middle" dominant-baseline="central" font-family="Inter,Montserrat,system-ui,sans-serif" font-weight="500" font-size=".5" letter-spacing=".12" textLength="${texto}" lengthAdjust="spacing" fill="#ffffff">${nome}</text></g>`);
-    void cor; void apagada;
+      <rect x="${f(-w / 2)}" y="${f(-h / 2)}" width="${w}" height="${h}" rx=".25" fill="${cor}" stroke="#ffffff" stroke-width=".12"/>
+      <text text-anchor="middle" dominant-baseline="central" font-family="Montserrat,Inter,system-ui,sans-serif" font-weight="800" font-size=".62" letter-spacing=".05" fill="#ffffff" stroke="${shade(cor, .45)}" stroke-width=".05" paint-order="stroke">${nome}</text></g>`);
+    void apagada;
   }
   function station(s) {
     const [x0, y0] = stationOrigin(s.i);
