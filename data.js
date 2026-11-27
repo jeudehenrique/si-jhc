@@ -9,8 +9,23 @@ const DB = (() => {
   const online = configured && !!window.supabase;
   // configurado, mas a biblioteca do Supabase não carregou (sem internet ou bloqueio)
   const configError = configured && !online;
-  const sb = online ? window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey) : null;
-  const LOCAL = 'jh-escritorio-v1', SESSION = 'jh-sessao';
+  const LOCAL = 'jh-escritorio-v1', SESSION = 'jh-sessao', MANTER = 'jh-si:manter-conectado';
+
+  /* "Lembrar neste dispositivo" (igual ao CRM): marcado, a sessão fica salva neste aparelho e a pessoa não precisa entrar de novo.
+     Desmarcado, a sessão some quando a janela do navegador é fechada. */
+  const manter = () => { try { return localStorage.getItem(MANTER) !== '0'; } catch { return true; } };
+  const definirManter = v => { try { localStorage.setItem(MANTER, v ? '1' : '0'); } catch {} };
+  const armazenamento = {
+    getItem(k) { try { return sessionStorage.getItem(k) ?? localStorage.getItem(k); } catch { return null; } },
+    setItem(k, v) {
+      try {
+        const alvo = manter() ? localStorage : sessionStorage, outro = alvo === localStorage ? sessionStorage : localStorage;
+        outro.removeItem(k); alvo.setItem(k, v);
+      } catch {}
+    },
+    removeItem(k) { try { localStorage.removeItem(k); sessionStorage.removeItem(k); } catch {} }
+  };
+  const sb = online ? window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, { auth: { storage: armazenamento, persistSession: true, autoRefreshToken: true } }) : null;
 
   /* Tabelas, na ordem de criação (pais antes dos filhos). Ao apagar, a ordem se inverte.
      "optional": a tabela pode não existir ainda no Supabase (migração não rodada);
@@ -132,10 +147,19 @@ const DB = (() => {
       const { data } = await sb.auth.getSession();
       return data.session?.user?.email || null;
     },
-    async login(email, password) {
+    manterConectado: manter,
+    async login(email, password, lembrar = true) {
+      definirManter(lembrar);
       if (!online) { localStorage.setItem(SESSION, email); return; }
       const { error } = await sb.auth.signInWithPassword({ email, password });
       if (error) throw new Error(loginMessage(error));
+    },
+    // entra com a conta Google (o Google mostra as contas já conectadas no aparelho para escolher)
+    async loginGoogle(lembrar = true) {
+      if (!online) throw new Error('O login com Google funciona só com o banco online.');
+      definirManter(lembrar);
+      const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname, queryParams: { prompt: 'select_account' } } });
+      if (error) throw new Error(/provider|not enabled|unsupported/i.test(error.message) ? 'O login com Google ainda não está ativado neste projeto.' : 'Não consegui abrir o Google: ' + error.message);
     },
     async setPassword(password) {
       if (!online) return;

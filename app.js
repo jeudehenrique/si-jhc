@@ -351,7 +351,7 @@ $('#loginForm').addEventListener('submit', async e => {
   const btn = e.submitter || $('#loginForm button');
   btn.disabled = true; btn.textContent = 'Entrando…'; $('#loginError').textContent = '';
   try {
-    await DB.login($('#loginEmail').value.trim(), $('#loginPass').value);
+    await DB.login($('#loginEmail').value.trim(), $('#loginPass').value, $('#loginLembrar').checked);
     $('#loginPass').value = '';
     await showApp();
   } catch (err) {
@@ -359,6 +359,12 @@ $('#loginForm').addEventListener('submit', async e => {
   } finally {
     btn.disabled = false; btn.textContent = 'Entrar';
   }
+});
+$('#loginLembrar').checked = DB.manterConectado();
+$('#googleBtn').addEventListener('click', async () => {
+  $('#loginError').textContent = '';
+  try { await DB.loginGoogle($('#loginLembrar').checked); }   // abre o Google e volta já logado
+  catch (err) { $('#loginError').textContent = err.message; }
 });
 $('#logoutBtn').onclick = async () => { await DB.logout(); state = emptyState(); showLogin(); };
 DB.onSignedOut(() => { state = emptyState(); showLogin('Sua sessão terminou. Entre de novo.'); });

@@ -794,3 +794,11 @@ body.priv-on #privBtn{border-color:color-mix(in srgb,var(--gold) 55%,var(--borde
   .stat{min-width:0}
   .stat .num{font-size:20px;overflow-wrap:anywhere}
 }
+
+/* login: "lembrar neste dispositivo" e botão do Google */
+.login-card .check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer;margin-bottom:12px}
+.login-card .check input{width:auto;margin:0;accent-color:var(--accent)}
+.btn.google{display:flex;align-items:center;justify-content:center;gap:10px;background:var(--field);border-color:var(--border);color:var(--text)}
+.btn.google:hover{filter:brightness(1.08)}
+.login-card .or{display:flex;align-items:center;gap:10px;margin:14px 0 12px;color:var(--muted);font-size:12px}
+.login-card .or::before,.login-card .or::after{content:"";flex:1;height:1px;background:var(--border)}
