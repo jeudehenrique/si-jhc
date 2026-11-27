@@ -802,3 +802,7 @@ body.priv-on #privBtn{border-color:color-mix(in srgb,var(--gold) 55%,var(--borde
 .btn.google:hover{filter:brightness(1.08)}
 .login-card .or{display:flex;align-items:center;gap:10px;margin:14px 0 12px;color:var(--muted);font-size:12px}
 .login-card .or::before,.login-card .or::after{content:"";flex:1;height:1px;background:var(--border)}
+
+/* comportamento de app no celular: sem zoom de pinça nem de toque duplo, sem zoom automático ao digitar */
+html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%;overscroll-behavior:none}
+@media (max-width:760px){ input,select,textarea{font-size:16px} }

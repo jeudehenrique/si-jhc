@@ -438,3 +438,6 @@ $('#forgotBtn').addEventListener('click', async () => {
     $('#loginNote').textContent = 'Enviamos um e-mail para ' + email + ' com o link para criar a senha nova. Confira também o spam.';
   } catch (err) { msg.textContent = err.message; }
 });
+
+/* iPhone ignora o bloqueio de zoom do viewport: bloqueia o gesto de pinça direto */
+['gesturestart','gesturechange','gestureend'].forEach(ev => document.addEventListener(ev, e => e.preventDefault()));
