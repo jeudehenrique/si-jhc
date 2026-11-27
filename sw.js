@@ -1,7 +1,7 @@
 /* Service worker da SI: deixa o app instalável e abrir mesmo sem internet (mostra a última versão vista).
    Regra de ouro: SEMPRE tenta a internet primeiro, então atualizações do site chegam na hora e nada fica velho.
    Só mexe em arquivos do próprio site (GET). Banco (Supabase), ajudante local e fontes passam direto, sem cache. */
-const CACHE = 'si-jhc-app-v1';
+const CACHE = 'si-jhc-app-v2';
 
 self.addEventListener('install', e => { self.skipWaiting(); });
 
@@ -17,7 +17,7 @@ self.addEventListener('fetch', e => {
   if (r.method !== 'GET' || u.origin !== self.location.origin) return;   // só arquivos do próprio site
   e.respondWith((async () => {
     try {
-      const nova = await fetch(r);
+      const nova = await fetch(r, { cache: 'no-cache' });   // sempre confere com o servidor (não usa a cópia velha do navegador)
       if (nova.ok) { const c = await caches.open(CACHE); c.put(r, nova.clone()); }
       return nova;
     } catch {
